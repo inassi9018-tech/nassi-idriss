@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="description" content="Nassi — Renewable Energy Engineer, UCA Marrakech"/>
+<title>Nassi ⚡ Renewable Energy &amp; Engineering</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@300;500;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══ ROOT ═══ */
+:root{
+  --solar:#ffb800;--green:#00e676;--sky:#00b4d8;
+  --deep:#090e1a;--panel:#0d1b2a;--card:#111d2e;
+  --glass:rgba(255,255,255,.05);--glass2:rgba(255,255,255,.08);
+  --border:rgba(255,184,0,.20);--border2:rgba(255,184,0,.38);
+  --text:#e8f4f8;--muted:#7a9bb5;--accent:#ff6b35;
+  --r:16px;--rs:10px;--rl:24px;
+  --font-d:'Orbitron',monospace;--font-b:'Rajdhani',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{background:var(--deep);color:var(--text);font-family:var(--font-b);overflow-x:hidden;line-height:1.65}
+body.ar{font-family:'Noto Kufi Arabic',sans-serif;direction:rtl}
+::selection{background:rgba(255,184,0,.25);color:#fff}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--deep)}
+::-webkit-scrollbar-thumb{background:var(--solar);border-radius:99px}
+
+/* Ambient orbs */
+body::before,body::after{
+  content:"";position:fixed;border-radius:50%;filter:blur(110px);opacity:.09;pointer-events:none;z-index:0;
+}
+body::before{width:520px;height:520px;top:-150px;left:-120px;background:var(--solar)}
+body::after{width:520px;height:520px;bottom:-160px;right:-120px;background:var(--sky)}
+
+/* Canvas + grid */
+#bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.65}
+.grid-lines{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,184,0,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,184,0,.022) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* Progress bar */
+#progress-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--solar),var(--green),var(--sky));z-index:9999;width:0;transition:width .12s}
+
+/* Custom cursor */
+#cur,#cur-dot{position:fixed;pointer-events:none;z-index:99999;border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity .3s;will-change:left,top}
+#cur{width:22px;height:22px;border:2px solid var(--solar);transition:width .18s,height .18s,background .18s,opacity .3s;mix-blend-mode:difference}
+#cur-dot{width:5px;height:5px;background:var(--green)}
+#cur.hov{width:38px;height:38px;background:rgba(255,184,0,.12)}
+#cur.clk{width:14px;height:14px}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:rgba(13,27,42,.97);border:1px solid var(--border);color:var(--text);
+  padding:13px 26px;border-radius:var(--rs);font-size:.9rem;z-index:9999;
+  opacity:0;transition:all .38s;pointer-events:none;backdrop-filter:blur(14px);
+}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* Back to top */
+#btt{
+  position:fixed;bottom:28px;right:28px;z-index:500;
+  width:46px;height:46px;border-radius:50%;
+  background:linear-gradient(135deg,var(--solar),#ff8c00);
+  border:none;color:var(--deep);font-size:1.1rem;cursor:pointer;
+  opacity:0;pointer-events:none;transition:.3s;
+  box-shadow:0 6px 24px rgba(255,184,0,.4);
+  display:flex;align-items:center;justify-content:center;font-weight:900;
+}
+#btt.vis{opacity:1;pointer-events:auto}
+#btt:hover{transform:translateY(-4px);box-shadow:0 10px 32px rgba(255,184,0,.6)}
+
+/* ═══ NAV ═══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px;
+  background:linear-gradient(180deg,rgba(9,14,26,.97) 0%,rgba(9,14,26,.74) 70%,transparent 100%);
+  backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.04);
+  box-shadow:0 10px 40px rgba(0,0,0,.2);transition:padding .35s,background .35s;
+}
+nav.slim{padding:11px 48px;background:rgba(9,14,26,.99)}
+.nav-logo{
+  font-family:var(--font-d);font-size:1.08rem;font-weight:900;letter-spacing:3px;
+  color:var(--solar);cursor:pointer;transition:.3s;
+  text-shadow:0 0 20px rgba(255,184,0,.4);
+  display:flex;align-items:center;gap:8px;user-select:none;
+}
+.nav-logo:hover{text-shadow:0 0 34px rgba(255,184,0,.75)}
+.nav-links{display:flex;gap:26px;align-items:center}
+.nav-links a{
+  color:var(--muted);text-decoration:none;font-size:.84rem;
+  font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  position:relative;cursor:pointer;transition:.3s;user-select:none;
+}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-5px;width:0;height:2px;background:var(--solar);border-radius:999px;transition:.3s}
+.nav-links a:hover,.nav-links a.active{color:var(--solar)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-db-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(255,184,0,.15);border:1px solid rgba(255,184,0,.25);
+  border-radius:999px;padding:3px 9px;font-size:.64rem;color:var(--solar);margin-left:4px;
+  vertical-align:middle;
+}
+.nav-right{display:flex;align-items:center;gap:14px}
+.lang-switch{display:flex;gap:6px}
+.lang-btn{
+  border:1px solid var(--border);background:var(--glass);
+  color:var(--muted);padding:5px 12px;border-radius:999px;
+  cursor:pointer;font-weight:700;font-size:.70rem;transition:.3s;
+}
+.lang-btn.active,.lang-btn:hover{background:var(--solar);color:var(--deep);border-color:var(--solar)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{width:24px;height:2px;background:var(--solar);border-radius:2px;transition:.3s;display:block}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* ═══ PAGE SYSTEM ═══ */
+.page{
+  position:fixed;inset:0;overflow-y:auto;z-index:1;
+  opacity:0;pointer-events:none;
+  transform:translateY(22px);filter:blur(5px);
+  transition:opacity .5s ease,transform .5s ease,filter .5s ease;
+}
+.page.active{opacity:1;pointer-events:auto;transform:translateY(0);filter:blur(0)}
+.section-shell{min-height:100vh;padding:100px 48px 60px;position:relative}
+
+/* ═══ SHARED ═══ */
+.section-label{
+  display:flex;align-items:center;gap:10px;color:var(--solar);
+  letter-spacing:3px;text-transform:uppercase;font-size:.72rem;margin-bottom:14px;
+}
+.section-label::before{content:"";width:28px;height:1px;background:var(--solar)}
+.section-title{font-family:var(--font-d);font-size:clamp(1.8rem,4vw,2.75rem);line-height:1.2;margin-bottom:20px}
+.section-title::after{content:"";display:block;width:84px;height:3px;margin-top:14px;border-radius:999px;background:linear-gradient(90deg,var(--solar),var(--green),transparent)}
+.about-text{color:var(--muted);line-height:1.9;font-size:1.03rem;margin-bottom:20px}
+.btn-primary,.btn-outline{
+  padding:13px 28px;border-radius:var(--rs);font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;
+  transition:.3s;position:relative;overflow:hidden;
+  font-family:var(--font-b);font-size:.95rem;
+}
+.btn-primary{border:none;color:var(--deep);background:linear-gradient(135deg,var(--solar),#ff9800);box-shadow:0 0 28px rgba(255,184,0,.3)}
+.btn-primary::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,.22),transparent);transform:translateX(-100%);transition:.5s}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(255,184,0,.5)}
+.btn-primary:hover::after{transform:translateX(100%)}
+.btn-outline{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-outline:hover{transform:translateY(-3px);border-color:var(--sky);color:var(--sky);background:rgba(0,180,216,.08)}
+.reveal{opacity:0;transform:translateY(32px)}
+.hero-animate{opacity:0}
+
+/* ═══ HOME ═══ */
+.home-hero{position:relative;min-height:100vh;overflow:hidden}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(125deg,rgba(9,14,26,.93) 0%,rgba(9,14,26,.62) 48%,rgba(9,14,26,.90) 100%);z-index:1}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg-img{position:absolute;border-radius:20px;background-size:cover;background-position:center;filter:brightness(.48) saturate(1.1);animation:slowFloat 11s ease-in-out infinite}
+.hbi1{top:8%;right:3%;width:295px;height:235px;background-image:url('https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=900&q=80')}
+.hbi2{bottom:16%;right:17%;width:255px;height:192px;animation-delay:1.9s;background-image:url('https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=900&q=80')}
+.hbi3{top:16%;left:52%;width:235px;height:170px;animation-delay:3.3s;background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80')}
+.hero-symbols{position:absolute;inset:0;z-index:1;pointer-events:none}
+.hero-symbols span{position:absolute;color:rgba(255,184,0,.11);font-family:var(--font-d);font-weight:700;animation:symFloat 14s ease-in-out infinite}
+.hs1{top:11%;left:7%;font-size:2rem}.hs2{top:19%;left:24%;font-size:1.4rem;animation-delay:.8s}
+.hs3{top:13%;right:17%;font-size:1.7rem;animation-delay:1.6s}.hs4{top:37%;left:14%;font-size:2.3rem;animation-delay:2.4s}
+.hs5{top:53%;left:40%;font-size:1.9rem;animation-delay:3.2s}.hs6{top:64%;left:7%;font-size:1.5rem;animation-delay:4s}
+.hs7{top:70%;left:27%;font-size:1.3rem;animation-delay:1.2s}.hs8{top:22%;right:33%;font-size:1.4rem;animation-delay:2s}
+.hs9{top:60%;right:22%;font-size:1.2rem;animation-delay:3.6s}.hs10{top:77%;right:9%;font-size:1.3rem;animation-delay:.4s}
+.hs11{top:46%;right:7%;font-size:1.7rem;animation-delay:2.8s}.hs12{top:32%;left:59%;font-size:1.5rem;animation-delay:1.8s}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:50px;align-items:center;min-height:calc(100vh - 100px);position:relative;z-index:2;padding-bottom:130px}
+.hero-content{max-width:680px}
+.hero-tag{display:inline-flex;align-items:center;gap:10px;padding:8px 18px;border-radius:999px;background:var(--glass);border:1px solid var(--border);color:var(--solar);text-transform:uppercase;letter-spacing:2px;font-size:.75rem;margin-bottom:26px}
+.pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.7s infinite;flex-shrink:0}
+.hero-mini{color:var(--solar);letter-spacing:4px;font-size:.75rem;margin-bottom:14px;opacity:.9}
+.hero-h1{font-family:var(--font-d);font-size:clamp(2.6rem,6.5vw,5rem);line-height:1.04;margin-bottom:20px}
+.hero-h1 .grad{background:linear-gradient(90deg,var(--solar),var(--green),var(--sky));background-size:220% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 6s linear infinite}
+.hero-sub{color:var(--muted);font-size:1.1rem;line-height:1.8;max-width:560px;margin-bottom:36px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px}
+.hero-strip{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.hero-strip span{padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,184,0,.16);color:var(--text);font-size:.82rem;backdrop-filter:blur(10px);transition:.3s;cursor:pointer;user-select:none}
+.hero-strip span:hover{background:rgba(255,184,0,.14);border-color:var(--solar);color:var(--solar);transform:translateY(-2px)}
+.hero-panel{position:relative;min-height:520px}
+.hero-glow{position:absolute;top:50%;left:50%;width:390px;height:390px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,184,0,.18) 0%,rgba(0,180,216,.10) 40%,transparent 75%);filter:blur(22px);animation:glowPulse 4s ease-in-out infinite}
+.hero-card{position:absolute;top:55px;right:35px;width:345px;border-radius:var(--rl);background:rgba(13,27,42,.88);border:1px solid rgba(255,184,0,.22);backdrop-filter:blur(20px);box-shadow:0 28px 90px rgba(0,0,0,.45);overflow:hidden;animation:cardFloat 7.5s ease-in-out infinite}
+.hero-card-dots{display:flex;gap:7px;padding:13px 17px;border-bottom:1px solid rgba(255,255,255,.06)}
+.hero-card-dot{width:10px;height:10px;border-radius:50%}
+.hcd1{background:#ff5f57}.hcd2{background:#ffbd2e}.hcd3{background:#28ca42}
+.hero-card-body{padding:20px}
+.hcb-badge{display:inline-block;padding:5px 12px;border-radius:999px;background:rgba(255,184,0,.12);border:1px solid rgba(255,184,0,.22);color:var(--solar);font-size:.73rem;margin-bottom:13px;letter-spacing:1px}
+.hero-card-body h3{font-family:var(--font-d);font-size:.9rem;margin-bottom:10px;line-height:1.5}
+.hero-card-body p{color:var(--muted);line-height:1.65;font-size:.88rem;margin-bottom:16px}
+.hc-metrics{display:grid;gap:8px}
+.hc-metric{padding:9px 11px;border-radius:var(--rs);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+.hc-metric-top{display:flex;justify-content:space-between;margin-bottom:5px}
+.hc-metric-top span{color:var(--muted);font-size:.85rem}
+.hc-metric-top strong{color:var(--solar);font-family:var(--font-d);font-size:.75rem}
+.hc-bar{height:3px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
+.hc-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--solar),var(--green))}
+.float-card{position:absolute;padding:10px 16px;border-radius:12px;background:rgba(13,27,42,.9);border:1px solid rgba(255,184,0,.16);color:var(--text);backdrop-filter:blur(16px);box-shadow:0 14px 40px rgba(0,0,0,.25);font-size:.83rem;letter-spacing:1px}
+.fc1{top:22px;left:18px;animation:fc 6.2s ease-in-out infinite}
+.fc2{bottom:115px;left:-5px;animation:fc 7.4s ease-in-out infinite 1.1s}
+.fc3{bottom:28px;right:-5px;animation:fc 8s ease-in-out infinite 2.2s}
+.stats-bar{position:absolute;left:48px;right:48px;bottom:40px;display:flex;gap:40px;flex-wrap:wrap;z-index:2}
+.stat-item::after{content:"";display:block;width:34px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--solar),transparent)}
+.stat-num{font-family:var(--font-d);color:var(--solar);font-size:2.2rem;font-weight:900}
+.stat-label{font-size:.72rem;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.scroll-hint{position:absolute;right:48px;bottom:26px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;animation:bounce 2.2s infinite;z-index:2}
+.scroll-line{width:1px;height:44px;background:linear-gradient(var(--solar),transparent)}
+
+/* ═══ ABOUT ═══ */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:1150px;margin:0 auto}
+.energy-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:24px 26px;margin-bottom:16px;position:relative;overflow:hidden;transition:.3s;backdrop-filter:blur(14px)}
+.energy-card::before{content:"";position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--solar),var(--green))}
+.energy-card:hover{transform:translateX(7px);border-color:rgba(255,184,0,.5);box-shadow:0 10px 30px rgba(255,184,0,.08)}
+.energy-card h3{font-family:var(--font-d);font-size:.82rem;color:var(--solar);margin-bottom:9px}
+.energy-card p{color:var(--muted);line-height:1.7;font-size:.92rem}
+.timeline{margin-top:46px;position:relative;padding-left:30px}
+.timeline::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--solar),var(--green),var(--sky),transparent)}
+.tl-item{position:relative;margin-bottom:30px;transition:.3s}
+.tl-dot{position:absolute;left:-30px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--solar);border:2px solid var(--deep);box-shadow:0 0 14px rgba(255,184,0,.6);transition:.3s}
+.tl-item:hover .tl-dot{transform:scale(1.2);box-shadow:0 0 20px rgba(255,184,0,.9)}
+.tl-year{font-family:var(--font-d);font-size:.7rem;color:var(--solar);letter-spacing:2px;margin-bottom:4px}
+.tl-content h4{font-size:1rem;font-weight:700;margin-bottom:4px}
+.tl-content p{color:var(--muted);font-size:.9rem;line-height:1.6}
+
+/* ═══ MODULES ═══ */
+.mods-header{max-width:760px;margin:0 auto 46px;text-align:center}
+.mods-header .section-label{justify-content:center}
+.mods-header .section-label::before{display:none}
+.mods-header .section-title::after{margin:14px auto 0}
+.mods-toolbar{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;margin-bottom:34px;max-width:1340px;margin-left:auto;margin-right:auto}
+.mods-search-wrap{position:relative;flex:1;min-width:220px;max-width:340px}
+.mods-search{width:100%;padding:10px 16px 10px 42px;background:var(--glass);border:1px solid var(--border);border-radius:999px;color:var(--text);font-family:var(--font-b);font-size:.92rem;outline:none;transition:.3s;backdrop-filter:blur(12px)}
+.mods-search:focus{border-color:var(--solar);background:rgba(255,184,0,.04)}
+.mods-search::placeholder{color:var(--muted)}
+.mods-search-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.9rem;pointer-events:none}
+.filter-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.filter-tab{padding:8px 20px;border-radius:999px;border:1px solid var(--border);background:var(--glass);color:var(--muted);cursor:pointer;font-weight:700;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;transition:.3s;user-select:none}
+.filter-tab.active,.filter-tab:hover{background:var(--solar);color:var(--deep);border-color:var(--solar)}
+.mods-count{font-size:.8rem;color:var(--muted);letter-spacing:1px;font-family:var(--font-d);white-space:nowrap}
+.mods-count span{color:var(--solar)}
+.mods-grid{max-width:1340px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.mod-card{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.022));border:1px solid var(--border);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;backdrop-filter:blur(12px);position:relative;transition:.38s}
+.mod-card::before{content:"";position:absolute;inset:0;border-radius:20px;padding:1px;background:linear-gradient(135deg,rgba(255,184,0,.32),rgba(0,230,118,.08),rgba(0,180,216,.2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:.38s;pointer-events:none}
+.mod-card:hover{transform:translateY(-9px);border-color:rgba(255,184,0,.5);box-shadow:0 26px 70px rgba(255,184,0,.14)}
+.mod-card:hover::before{opacity:1}
+.mod-thumb{width:100%;height:195px;background-size:cover;background-position:center;position:relative;overflow:hidden;flex-shrink:0;transition:transform .45s}
+.mod-thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(9,14,26,.7) 100%)}
+.mod-card:hover .mod-thumb{transform:scale(1.06)}
+.mod-fav-badge{position:absolute;top:12px;right:12px;z-index:3;background:rgba(255,184,0,.15);border:1px solid rgba(255,184,0,.3);border-radius:50%;width:30px;height:30px;display:none;align-items:center;justify-content:center;font-size:.85rem}
+.mod-card.favorited .mod-fav-badge{display:flex}
+.mod-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;flex-shrink:0}
+.mod-photo{height:56px;background-size:cover;background-position:center;border-radius:8px;overflow:hidden;transition:transform .3s}
+.mod-card:hover .mod-photo{transform:scale(1.05)}
+.mod-body{padding:15px 17px 17px;display:flex;flex-direction:column;flex:1}
+.mod-icon{font-size:1.6rem;margin-bottom:7px;animation:float 3s ease-in-out infinite;transition:.3s}
+.mod-card:hover .mod-icon{transform:translateY(-6px) scale(1.1) rotate(5deg)}
+.mod-card h3{font-family:var(--font-d);font-size:.82rem;margin-bottom:7px;line-height:1.5;transition:color .3s}
+.mod-card:hover h3{color:var(--solar)}
+.mod-card p{color:var(--muted);line-height:1.62;font-size:.87rem;flex:1}
+.mod-tag{display:inline-block;margin-top:11px;padding:4px 11px;border-radius:999px;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--solar);background:rgba(255,184,0,.10);border:1px solid rgba(255,184,0,.26);width:fit-content}
+.mod-card.hidden{display:none!important}
+.mods-empty{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--muted)}
+.mods-empty span{font-size:3rem;display:block;margin-bottom:14px}
+
+/* Module detail overlay */
+.mod-overlay{position:fixed;inset:0;background:rgba(2,7,16,.90);backdrop-filter:blur(14px);z-index:99999;display:flex;justify-content:center;align-items:center;opacity:0;visibility:hidden;transition:.32s;padding:16px}
+.mod-overlay.open{opacity:1;visibility:visible}
+.mod-panel{width:min(1080px,100%);max-height:94vh;overflow-y:auto;background:linear-gradient(180deg,rgba(13,27,42,.99),rgba(9,14,26,.99));border:1px solid rgba(255,184,0,.2);border-radius:var(--rl);box-shadow:0 40px 120px rgba(0,0,0,.6);transform:scale(.92) translateY(28px);transition:.35s;position:relative}
+.mod-overlay.open .mod-panel{transform:scale(1) translateY(0)}
+.mod-close{position:absolute;top:14px;right:14px;width:42px;height:42px;border:none;border-radius:50%;background:rgba(255,255,255,.08);color:var(--text);font-size:1rem;cursor:pointer;z-index:2;transition:.3s}
+.mod-close:hover{background:rgba(255,184,0,.2);color:var(--solar);transform:rotate(90deg)}
+.mod-detail-hero{height:300px;background-size:cover;background-position:center;border-radius:var(--rl) var(--rl) 0 0;position:relative}
+.mod-detail-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(9,14,26,.06),rgba(9,14,26,.88));border-radius:var(--rl) var(--rl) 0 0}
+.mod-detail-badge{position:absolute;bottom:20px;left:26px;z-index:2;padding:6px 14px;border-radius:999px;background:rgba(255,184,0,.15);border:1px solid rgba(255,184,0,.3);color:var(--solar);font-size:.75rem;letter-spacing:1px}
+.mod-gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px;background:rgba(0,0,0,.2)}
+.mod-gallery-img{height:88px;border-radius:10px;background-size:cover;background-position:center;cursor:pointer;transition:.3s;border:1px solid rgba(255,184,0,.1)}
+.mod-gallery-img:hover{transform:scale(1.04);border-color:var(--solar)}
+.mod-detail-body{padding:28px}
+.mod-detail-body h2{font-family:var(--font-d);font-size:1.5rem;margin-bottom:14px;line-height:1.4}
+.mod-detail-desc{color:var(--muted);line-height:1.9;font-size:1rem;margin-bottom:24px}
+.mod-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.detail-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,184,0,.12);border-radius:var(--r);padding:18px}
+.detail-box h4{font-family:var(--font-d);color:var(--solar);font-size:.84rem;margin-bottom:12px}
+.detail-box ul{list-style:none;display:grid;gap:9px}
+.detail-box li{color:var(--text);position:relative;padding-left:17px;line-height:1.65}
+.detail-box li::before{content:"▸";position:absolute;left:0;color:var(--green)}
+.fav-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--rs);border:1px solid var(--border);background:var(--glass);color:var(--muted);cursor:pointer;transition:.3s;font-size:.88rem;margin-top:16px;font-family:var(--font-b)}
+.fav-btn:hover,.fav-btn.active{border-color:var(--solar);color:var(--solar);background:rgba(255,184,0,.08)}
+
+/* ═══ SKILLS ═══ */
+.skills-top{max-width:760px;margin:0 auto 50px;text-align:center}
+.skills-top .section-label{justify-content:center}
+.skills-top .section-label::before{display:none}
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:1150px;margin:0 auto}
+.skill-cat h3{font-family:var(--font-d);font-size:.84rem;color:var(--solar);margin-bottom:22px;letter-spacing:2px}
+.skill-bar-wrap{margin-bottom:16px}
+.skill-name{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;font-size:.94rem}
+.skill-pct{color:var(--solar);font-family:var(--font-d);font-size:.76rem}
+.skill-bg{height:5px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+.skill-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--solar),var(--green));width:0;transition:width 1.3s cubic-bezier(.4,0,.2,1)}
+.skills-anim .skill-fill{width:var(--w)}
+.tech-tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:8px}
+.tech-tag{padding:7px 15px;border-radius:8px;background:var(--glass);border:1px solid var(--border);transition:.3s;cursor:default}
+.tech-tag:hover{transform:translateY(-3px);border-color:var(--sky);color:var(--sky)}
+.lang-row{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:52px}
+.lang-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:22px 32px;text-align:center;min-width:165px;backdrop-filter:blur(12px);transition:.3s}
+.lang-card:hover{border-color:var(--solar);transform:translateY(-4px)}
+.lang-card .flag{font-size:2rem;margin-bottom:7px}
+.lang-card .lname{font-family:var(--font-d);font-size:.8rem;color:var(--solar)}
+.lang-card .llevel{color:var(--muted);margin-top:4px;font-size:.8rem}
+.radar-wrap{max-width:380px;margin:48px auto 0;background:var(--glass);border:1px solid var(--border);border-radius:var(--rl);padding:28px;text-align:center;backdrop-filter:blur(14px)}
+.radar-wrap h3{font-family:var(--font-d);font-size:.82rem;color:var(--solar);margin-bottom:20px;letter-spacing:2px}
+
+/* ═══ CONTACT ═══ */
+.ct-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:1000px;margin:0 auto}
+.ct-info-item{display:flex;gap:16px;margin-bottom:26px;align-items:flex-start}
+.ct-icon{width:48px;height:48px;border-radius:12px;background:var(--glass);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:.3s;flex-shrink:0}
+.ct-icon:hover{transform:translateY(-3px);border-color:var(--solar)}
+.ct-info-text h4{font-family:var(--font-d);font-size:.75rem;color:var(--solar);margin-bottom:4px;letter-spacing:2px;text-transform:uppercase}
+.ct-info-text a,.ct-info-text p{color:var(--text);text-decoration:none;font-size:.98rem}
+.ct-info-text a:hover{color:var(--solar)}
+.socials{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.soc-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--rs);border:1px solid var(--border);background:var(--glass);color:var(--text);text-decoration:none;font-size:.83rem;font-weight:700;letter-spacing:1px;transition:.3s}
+.soc-btn:hover{transform:translateY(-3px);border-color:var(--solar);color:var(--solar)}
+.ct-form{display:flex;flex-direction:column;gap:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-field{display:flex;flex-direction:column;gap:5px}
+.form-field label{color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-size:.72rem}
+.form-field input,.form-field textarea,.form-field select{background:var(--glass);border:1px solid var(--border);border-radius:var(--rs);padding:12px 15px;color:var(--text);font-family:var(--font-b);font-size:.95rem;outline:none;transition:.3s}
+.form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-color:var(--solar);background:rgba(255,184,0,.04)}
+.form-field textarea{min-height:120px;resize:vertical}
+.form-field input::placeholder,.form-field textarea::placeholder{color:var(--muted);opacity:.55}
+.form-field select option{background:var(--panel);color:var(--text)}
+.form-counter{text-align:right;font-size:.72rem;color:var(--muted);margin-top:3px}
+.form-success{display:none;color:var(--green);padding:12px 16px;border-radius:var(--rs);border:1px solid rgba(0,230,118,.2);background:rgba(0,230,118,.05);font-size:.92rem}
+.form-err{color:#ff5555;font-size:.8rem;display:none;margin-top:3px}
+
+/* ═══ DATABASE PAGE ═══ */
+.db-banner{background:linear-gradient(135deg,rgba(255,184,0,.10),rgba(0,180,216,.08));border:1px solid var(--border);border-radius:var(--rl);padding:26px 32px;margin-bottom:40px;display:flex;align-items:center;justify-content:space-between;gap:20px;backdrop-filter:blur(14px)}
+.db-banner-text h3{font-family:var(--font-d);color:var(--solar);margin-bottom:6px;font-size:.95rem}
+.db-banner-text p{color:var(--muted);font-size:.9rem;line-height:1.65}
+.db-status{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--green);white-space:nowrap}
+.db-status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1.7s infinite}
+.tab-bar{display:flex;gap:8px;margin-bottom:36px;border-bottom:1px solid var(--border);padding-bottom:16px;overflow-x:auto}
+.db-tab{padding:9px 22px;border-radius:999px;border:1px solid var(--border);background:var(--glass);color:var(--muted);cursor:pointer;font-weight:700;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;transition:.3s;white-space:nowrap}
+.db-tab.active,.db-tab:hover{background:var(--solar);color:var(--deep);border-color:var(--solar)}
+.db-stats-row{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:36px}
+.db-stat{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:20px 26px;flex:1;min-width:150px;backdrop-filter:blur(14px);transition:.3s}
+.db-stat:hover{border-color:var(--solar);transform:translateY(-3px)}
+.db-stat-num{font-family:var(--font-d);color:var(--solar);font-size:2rem;font-weight:900}
+.db-stat-label{color:var(--muted);font-size:.74rem;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+.db-pane{display:none}
+.db-pane.active{display:block}
+.fav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:16px;max-width:1340px;margin:0 auto}
+.fav-item{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:.3s}
+.fav-item:hover{border-color:rgba(255,184,0,.45);transform:translateY(-4px)}
+.fav-item-thumb{height:135px;background-size:cover;background-position:center}
+.fav-item-body{padding:14px 16px}
+.fav-item-body h4{font-family:var(--font-d);font-size:.8rem;margin-bottom:6px;color:var(--solar)}
+.fav-item-body p{color:var(--muted);font-size:.85rem;line-height:1.55}
+.fav-item-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.fav-remove{background:none;border:1px solid rgba(255,85,85,.3);border-radius:6px;color:#ff5555;font-size:.75rem;padding:4px 10px;cursor:pointer;transition:.3s}
+.fav-remove:hover{background:rgba(255,85,85,.12)}
+.db-empty{text-align:center;padding:70px 20px;color:var(--muted)}
+.db-empty span{font-size:3rem;display:block;margin-bottom:14px}
+.msgs-list{max-width:960px;margin:0 auto;display:grid;gap:14px}
+.msg-item{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;position:relative;transition:.3s;backdrop-filter:blur(12px)}
+.msg-item:hover{border-color:rgba(255,184,0,.4)}
+.msg-item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:10px}
+.msg-sender{font-family:var(--font-d);font-size:.82rem;color:var(--solar)}
+.msg-time{font-size:.72rem;color:var(--muted);white-space:nowrap}
+.msg-subject{font-size:.8rem;color:var(--sky);margin-bottom:7px}
+.msg-body{color:var(--muted);font-size:.9rem;line-height:1.65}
+.msg-del{position:absolute;top:14px;right:14px;background:none;border:none;cursor:pointer;color:var(--muted);font-size:.9rem;transition:.3s;padding:4px}
+.msg-del:hover{color:#ff5555;transform:scale(1.2)}
+.history-list{max-width:960px;margin:0 auto;display:grid;gap:10px}
+.hist-item{background:var(--glass);border:1px solid var(--border);border-radius:var(--rs);padding:12px 18px;display:flex;align-items:center;gap:14px;transition:.3s}
+.hist-item:hover{border-color:rgba(255,184,0,.35)}
+.hist-dot{width:8px;height:8px;border-radius:50%;background:var(--solar);flex-shrink:0}
+.hist-text{flex:1;color:var(--text);font-size:.92rem}
+.hist-time{font-size:.72rem;color:var(--muted)}
+.analytics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;max-width:1100px;margin:0 auto 28px}
+.analytic-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;backdrop-filter:blur(14px)}
+.analytic-card h4{font-family:var(--font-d);font-size:.74rem;color:var(--muted);margin-bottom:12px;letter-spacing:1.5px}
+.analytic-num{font-family:var(--font-d);font-size:1.8rem;color:var(--solar);margin-bottom:4px}
+.analytic-trend{font-size:.78rem;color:var(--green)}
+.bar-chart-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:.82rem}
+.bar-chart-label{width:90px;color:var(--muted);flex-shrink:0;font-size:.78rem}
+.bar-chart-bg{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+.bar-chart-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--solar),var(--green));transition:width 1.2s ease}
+.bar-chart-val{width:36px;text-align:right;color:var(--solar);font-family:var(--font-d);font-size:.72rem}
+
+/* ═══ FOOTER ═══ */
+.footer{text-align:center;padding:26px 24px;color:var(--muted);font-size:.78rem;letter-spacing:1px;border-top:1px solid var(--border)}
+.footer a{color:var(--solar);text-decoration:none}
+.footer-links{display:flex;gap:20px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.footer-links a{color:var(--muted);text-decoration:none;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;transition:.3s}
+.footer-links a:hover{color:var(--solar)}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1240px){.mods-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1100px){
+  .hero-grid{grid-template-columns:1fr}.hero-panel{min-height:430px}
+  .hero-card{right:50%;transform:translateX(50%)}.fc1{left:8%}.fc2{left:6%}.fc3{right:6%}
+}
+@media(max-width:900px){
+  .about-grid,.skills-grid,.ct-grid{grid-template-columns:1fr}.stats-bar{display:none}
+  .mod-detail-grid{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}
+}
+@media(max-width:860px){.mods-grid{grid-template-columns:repeat(2,1fr);gap:16px}}
+@media(max-width:768px){
+  #cur,#cur-dot{display:none!important}
+  nav{padding:14px 18px}.nav-links{display:none}.hamburger{display:flex}
+  .nav-links.open{display:flex;flex-direction:column;position:fixed;top:62px;left:0;right:0;background:rgba(9,14,26,.99);padding:22px;border-bottom:1px solid var(--border);gap:18px;z-index:199}
+  .section-shell{padding:90px 18px 50px}.scroll-hint{right:18px}
+  .hero-btns{flex-direction:column}.btn-primary,.btn-outline{width:100%;text-align:center}
+  .hero-bg{display:none}.hero-panel{min-height:360px}
+  .hero-card{width:calc(100% - 28px);max-width:340px;right:50%;left:auto;transform:translateX(50%);top:24px}
+  .float-card{display:none}.mod-detail-hero{height:200px}
+  .mod-gallery{grid-template-columns:repeat(2,1fr)}.mod-gallery-img{height:70px}
+  .mod-detail-body{padding:18px}.mod-detail-body h2{font-size:1.2rem}
+  #btt{bottom:18px;right:14px;width:40px;height:40px}.mods-search-wrap{max-width:100%}
+}
+@media(max-width:480px){.hero-h1{font-size:2.4rem}.section-title{font-size:1.7rem}.mods-grid{grid-template-columns:1fr;gap:14px}.tab-bar{overflow-x:auto}.db-stats-row{gap:10px}}
+
+/* RTL */
+body.ar .section-label::before{display:none}
+body.ar .section-label::after{content:"";width:28px;height:1px;background:var(--solar)}
+body.ar .hero-card{right:auto;left:35px}
+body.ar .mod-close{right:auto;left:14px}
+body.ar .mod-detail-badge{left:auto;right:26px}
+body.ar .energy-card::before{left:auto;right:0}
+body.ar .energy-card:hover{transform:translateX(-7px)}
+body.ar .timeline{padding-left:0;padding-right:30px}
+body.ar .timeline::before{left:auto;right:8px}
+body.ar .tl-dot{left:auto;right:-30px}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+@keyframes slowFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-13px) scale(1.02)}}
+@keyframes symFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-15px) rotate(5deg)}}
+@keyframes glowPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.85}50%{transform:translate(-50%,-50%) scale(1.09);opacity:1}}
+@keyframes cardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}
+@keyframes fc{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div class="grid-lines"></div>
+<div id="progress-bar"></div>
+<div id="cur"></div><div id="cur-dot"></div>
+<div id="toast"></div>
+<button id="btt" onclick="backToTop()" title="Back to top">&#8593;</button>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="showPage('home')"><span>&#9889;</span> NASSI</div>
+  <div class="nav-links" id="navLinks">
+    <a href="#" onclick="showPage('home');return false;" class="active" data-key="nav_home">Home</a>
+    <a href="#" onclick="showPage('about');return false;" data-key="nav_about">About</a>
+    <a href="#" onclick="showPage('modules');return false;" data-key="nav_modules">Modules</a>
+    <a href="#" onclick="showPage('skills');return false;" data-key="nav_skills">Skills</a>
+    <a href="#" onclick="showPage('contact');return false;" data-key="nav_contact">Contact</a>
+    <a href="#" onclick="showPage('database');return false;" data-key="nav_db">My Space <span class="nav-db-badge" id="favBadge">&#11088; 0</span></a>
+  </div>
+  <div class="nav-right">
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('ar')">&#1593;</button>
+    </div>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME -->
+<section class="page active" id="home">
+  <div class="section-shell home-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-bg">
+      <div class="hero-bg-img hbi1"></div>
+      <div class="hero-bg-img hbi2"></div>
+      <div class="hero-bg-img hbi3"></div>
+    </div>
+    <div class="hero-symbols">
+      <span class="hs1">&#8747;</span><span class="hs2">&#955;</span>
+      <span class="hs3">&#937;</span><span class="hs4">&#8721;</span>
+      <span class="hs5">&#934;</span><span class="hs6">&#8853;</span>
+      <span class="hs7">&#916;E</span><span class="hs8">h&#957;</span>
+      <span class="hs9">PV</span><span class="hs10">E=mc&#178;</span>
+      <span class="hs11">&#8711;</span><span class="hs12">&#956;</span>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-tag hero-animate">
+          <div class="pulse-dot"></div>
+          <span data-key="tag_status">Available for collaboration</span>
+        </div>
+        <div class="hero-mini hero-animate">SCIENCE &bull; ENERGY &bull; TECHNOLOGY</div>
+        <h1 class="hero-h1 hero-animate">
+          <div data-key="hero_line1">Engineering the</div>
+          <div class="grad" data-key="hero_line2">Energy Future</div>
+        </h1>
+        <p class="hero-sub hero-animate" data-key="hero_sub">Student of Renewable Energies at UCA Marrakech, passionate about solar power, quantum systems, and building modern digital interfaces for a cleaner future.</p>
+        <div class="hero-btns hero-animate">
+          <button class="btn-primary" onclick="showPage('modules')" data-key="btn_explore">Explore My Work</button>
+          <button class="btn-outline" onclick="showPage('contact')" data-key="btn_contact">Get In Touch</button>
+        </div>
+        <div class="hero-strip hero-animate">
+          <span onclick="showPage('modules')">&#9889; <span data-key="tag1">Renewable Energy</span></span>
+          <span onclick="showPage('modules')">&#9728; <span data-key="tag2">Photovoltaics</span></span>
+          <span onclick="showPage('modules')">&#8721; <span data-key="tag3">Analysis</span></span>
+          <span onclick="showPage('modules')">&#129522; <span data-key="tag4">Electromagnetism</span></span>
+          <span onclick="showPage('modules')">&#9762; <span data-key="tag5">Nuclear</span></span>
+        </div>
+      </div>
+      <div class="hero-panel hero-animate">
+        <div class="hero-glow"></div>
+        <div class="hero-card">
+          <div class="hero-card-dots">
+            <div class="hero-card-dot hcd1"></div>
+            <div class="hero-card-dot hcd2"></div>
+            <div class="hero-card-dot hcd3"></div>
+          </div>
+          <div class="hero-card-body">
+            <div class="hcb-badge" data-key="card_badge">Scientific Focus</div>
+            <h3 data-key="card_title">Renewable Energy Systems</h3>
+            <p data-key="card_desc">Photovoltaic systems, smart grids, energy storage, physical sensors, solar concentration, and scientific computation.</p>
+            <div class="hc-metrics">
+              <div class="hc-metric"><div class="hc-metric-top"><span data-key="card_s1">Solar</span><strong>92%</strong></div><div class="hc-bar"><div class="hc-bar-fill" style="width:92%"></div></div></div>
+              <div class="hc-metric"><div class="hc-metric-top"><span data-key="card_s2">Analysis</span><strong>88%</strong></div><div class="hc-bar"><div class="hc-bar-fill" style="width:88%"></div></div></div>
+              <div class="hc-metric"><div class="hc-metric-top"><span data-key="card_s3">Physics</span><strong>90%</strong></div><div class="hc-bar"><div class="hc-bar-fill" style="width:90%"></div></div></div>
+              <div class="hc-metric"><div class="hc-metric-top"><span data-key="card_s4">Web&nbsp;UI</span><strong>84%</strong></div><div class="hc-bar"><div class="hc-bar-fill" style="width:84%"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="float-card fc1"><span>&#9728; <span data-key="fc1">Solar Flux</span></span></div>
+        <div class="float-card fc2"><span>&#8747; <span data-key="fc2">Smart Analysis</span></span></div>
+        <div class="float-card fc3"><span>&#10006; <span data-key="fc3">Scientific Logic</span></span></div>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-item"><div class="stat-num" id="stat-modules">0</div><div class="stat-label" data-key="stat1">Core Modules</div></div>
+      <div class="stat-item"><div class="stat-num" id="stat-fields">0</div><div class="stat-label" data-key="stat2">Advanced Fields</div></div>
+      <div class="stat-item"><div class="stat-num">&#8734;</div><div class="stat-label" data-key="stat3">Curiosity Level</div></div>
+      <div class="stat-item"><div class="stat-num" id="stat-visits">0</div><div class="stat-label" data-key="stat4">Visits</div></div>
+    </div>
+    <div class="scroll-hint" onclick="showPage('about')">
+      <div class="scroll-line"></div>
+      <span data-key="scroll">Scroll</span>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="page" id="about">
+  <div class="section-shell">
+    <div class="about-grid">
+      <div>
+        <div class="section-label reveal"><span data-key="about_label">About Me</span></div>
+        <h2 class="section-title reveal" data-key="about_title">Bridging Science &amp; Technology</h2>
+        <p class="about-text reveal" data-key="about_p1">I am a student at Cadi Ayyad University studying renewable energies. My path combines physics, chemistry, and digital technologies to create innovative solutions for tomorrow's energy challenges.</p>
+        <p class="about-text reveal" data-key="about_p2">Beyond academics, I am passionate about web development and modern interface design — bridging scientific knowledge with digital creativity.</p>
+        <p class="about-text reveal" data-key="about_p3">My goal: connect energy engineering with technology and create useful solutions for a sustainable, clean-energy future.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;" class="reveal">
+          <button class="btn-primary" onclick="showPage('modules')" data-key="btn_modules">View My Modules</button>
+          <button class="btn-outline" onclick="showPage('skills')" data-key="btn_skills">My Skills</button>
+        </div>
+        <div class="timeline reveal">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2022</div>
+            <div class="tl-content">
+              <h4 data-key="tl1_title">Baccalauréat — Sciences Physiques</h4>
+              <p data-key="tl1_desc">Graduated with honors, solid foundation in physics and mathematics.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2022 – 2024</div>
+            <div class="tl-content">
+              <h4 data-key="tl2_title">DEUST — Sciences &amp; Technologies</h4>
+              <p data-key="tl2_desc">University Cadi Ayyad — Multidisciplinary scientific training in physics, chemistry, and mathematics.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-year">2024 – Now</div>
+            <div class="tl-content">
+              <h4 data-key="tl3_title">Licence — Renewable Energies</h4>
+              <p data-key="tl3_desc">Focused study of photovoltaics, wind energy, energy storage, and smart grid systems.</p>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot" style="background:var(--green)"></div>
+            <div class="tl-year" style="color:var(--green)">2025 →</div>
+            <div class="tl-content">
+              <h4 data-key="tl4_title">Self-Learning: Web Development</h4>
+              <p data-key="tl4_desc">Building modern interfaces with HTML, CSS, JavaScript — creating tools that merge engineering with great UX.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="energy-card reveal">
+          <h3>&#9889; <span data-key="ec1_title">Energy Systems</span></h3>
+          <p data-key="ec1_desc">Photovoltaics, wind turbines, thermal collectors, smart grids. Designing systems for maximum renewable yield and efficiency.</p>
+        </div>
+        <div class="energy-card reveal">
+          <h3>&#128300; <span data-key="ec2_title">Scientific Research</span></h3>
+          <p data-key="ec2_desc">Quantum mechanics, electromagnetism, thermodynamics. Applying foundational science to real engineering problems.</p>
+        </div>
+        <div class="energy-card reveal">
+          <h3>&#128187; <span data-key="ec3_title">Digital Engineering</span></h3>
+          <p data-key="ec3_desc">Web technologies and computational tools to analyze and simulate energy systems with interactive dashboards.</p>
+        </div>
+        <div class="energy-card reveal">
+          <h3>&#127758; <span data-key="ec4_title">Sustainable Future</span></h3>
+          <p data-key="ec4_desc">Committed to clean energy for Morocco and beyond — combining local expertise with global scientific standards.</p>
+        </div>
+        <div class="reveal" style="margin-top:28px;padding:22px 26px;background:var(--glass);border-left:3px solid var(--solar);border-radius:0 var(--r) var(--r) 0;backdrop-filter:blur(12px)">
+          <p style="color:var(--text);font-size:1.05rem;line-height:1.8;font-style:italic" data-key="about_quote">"The energy of the sun is infinite — our job is to harvest it wisely."</p>
+          <p style="color:var(--solar);font-size:.78rem;margin-top:10px;letter-spacing:2px">— NASSI, UCA Marrakech</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer" style="margin-top:50px">
+      <div class="footer-links">
+        <a href="#" onclick="showPage('home');return false;" data-key="nav_home">Home</a>
+        <a href="#" onclick="showPage('modules');return false;" data-key="nav_modules">Modules</a>
+        <a href="#" onclick="showPage('skills');return false;" data-key="nav_skills">Skills</a>
+        <a href="#" onclick="showPage('contact');return false;" data-key="nav_contact">Contact</a>
+      </div>
+      <p style="margin-top:14px" data-key="footer">© 2025 — Designed with Energy &amp; Code by Nassi · UCA Marrakech</p>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section class="page" id="modules">
+  <div class="section-shell">
+    <div class="mods-header">
+      <div class="section-label reveal"><span data-key="mod_label">Academic Modules</span></div>
+      <h2 class="section-title reveal" data-key="mod_title">Courses I Study</h2>
+      <p class="about-text reveal" data-key="mod_sub">A strong academic path covering energy, chemistry, mathematics, quantum mechanics, and engineering tools.</p>
+    </div>
+    <div class="mods-toolbar reveal">
+      <div class="mods-search-wrap">
+        <span class="mods-search-icon">&#128269;</span>
+        <input class="mods-search" id="modSearch" type="text" placeholder="Search modules..." oninput="searchModules()"/>
+      </div>
+      <div class="filter-tabs" id="filterTabs">
+        <button class="filter-tab active" onclick="filterModules('all',this)" data-key="filter_all">All</button>
+        <button class="filter-tab" onclick="filterModules('Physics',this)" data-key="filter_physics">Physics</button>
+        <button class="filter-tab" onclick="filterModules('Chemistry',this)" data-key="filter_chem">Chemistry</button>
+        <button class="filter-tab" onclick="filterModules('Energy',this)" data-key="filter_energy">Energy</button>
+        <button class="filter-tab" onclick="filterModules('Math',this)" data-key="filter_math">Math</button>
+      </div>
+      <div class="mods-count"><span id="modCount">22</span> <span data-key="mod_count_label">modules</span></div>
+    </div>
+    <div class="mods-grid" id="modsGrid"></div>
+    <div class="footer" style="margin-top:50px">
+      <p data-key="footer">© 2025 — Designed with Energy &amp; Code by Nassi · UCA Marrakech</p>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE OVERLAY -->
+<div class="mod-overlay" id="modOverlay" onclick="handleOverlayClick(event)">
+  <div class="mod-panel" id="modPanel"><button class="mod-close" onclick="closeModule()">&#10005;</button><div id="modContent"></div></div>
+</div>
+
+<!-- SKILLS -->
+<section class="page" id="skills">
+  <div class="section-shell">
+    <div class="skills-top">
+      <div class="section-label reveal"><span data-key="sk_label">My Skills</span></div>
+      <h2 class="section-title reveal" data-key="sk_title">Science &amp; Code Together</h2>
+      <p class="about-text reveal" data-key="sk_sub">A fusion of engineering sciences and modern web technologies.</p>
+    </div>
+    <div class="skills-grid" id="skillsGrid">
+      <div class="skill-cat reveal">
+        <h3 data-key="sk_energy">&#9889; Energy Sciences</h3>
+        <div class="skill-bar-wrap"><div class="skill-name"><span data-key="sk_pv">Photovoltaic Systems</span><span class="skill-pct">92%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:92%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span data-key="sk_thermo">Thermodynamics</span><span class="skill-pct">85%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:85%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span data-key="sk_quant">Quantum Mechanics</span><span class="skill-pct">78%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:78%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span data-key="sk_chem">Chemistry</span><span class="skill-pct">82%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:82%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span data-key="sk_optics">Optics &amp; Waves</span><span class="skill-pct">80%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:80%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span data-key="sk_em">Electromagnetism</span><span class="skill-pct">87%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:87%"></div></div></div>
+      </div>
+      <div class="skill-cat reveal">
+        <h3 data-key="sk_web">&#128187; Web Technologies</h3>
+        <div class="skill-bar-wrap"><div class="skill-name"><span>HTML5 &amp; CSS3</span><span class="skill-pct">90%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:90%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span>JavaScript</span><span class="skill-pct">82%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:82%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span data-key="sk_responsive">Responsive Design</span><span class="skill-pct">88%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:88%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span>Animation &amp; UX</span><span class="skill-pct">79%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:79%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span>Python / Scripting</span><span class="skill-pct">74%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:74%"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-name"><span>Data Visualization</span><span class="skill-pct">72%</span></div><div class="skill-bg"><div class="skill-fill" style="--w:72%"></div></div></div>
+        <h3 style="margin-top:28px" data-key="sk_tools">&#128295; Tools &amp; Software</h3>
+        <div class="tech-tags">
+          <div class="tech-tag">MATLAB</div><div class="tech-tag">GSAP</div><div class="tech-tag">Git</div>
+          <div class="tech-tag">VS Code</div><div class="tech-tag">LaTeX</div><div class="tech-tag">Origin</div>
+          <div class="tech-tag">Excel</div><div class="tech-tag">PVsyst</div>
+        </div>
+      </div>
+    </div>
+    <div class="radar-wrap reveal">
+      <h3 data-key="radar_title">Scientific Profile</h3>
+      <canvas id="radarChart" width="300" height="300"></canvas>
+    </div>
+    <div class="lang-row" style="margin-top:52px">
+      <div class="lang-card reveal"><div class="flag">&#127474;&#127462;</div><div class="lname" data-key="lang_arabic">Arabic</div><div class="llevel" data-key="lang_native">Native</div></div>
+      <div class="lang-card reveal"><div class="flag">&#127467;&#127479;</div><div class="lname" data-key="lang_french">French</div><div class="llevel" data-key="lang_fluent">Fluent</div></div>
+      <div class="lang-card reveal"><div class="flag">&#127468;&#127463;</div><div class="lname" data-key="lang_english">English</div><div class="llevel" data-key="lang_advanced">Advanced</div></div>
+    </div>
+    <div class="footer" style="margin-top:60px"><p data-key="footer">© 2025 — Designed with Energy &amp; Code by Nassi · UCA Marrakech</p></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="page" id="contact">
+  <div class="section-shell">
+    <div style="max-width:760px;margin:0 auto 48px">
+      <div class="section-label reveal"><span data-key="ct_label">Contact</span></div>
+      <h2 class="section-title reveal" data-key="ct_title">Let's Build Something Together</h2>
+      <p class="about-text reveal" data-key="ct_sub">Interested in renewable energy collaboration, web projects, or just want to say hi — my inbox is open.</p>
+    </div>
+    <div class="ct-grid">
+      <div>
+        <div class="ct-info-item reveal"><div class="ct-icon">&#128231;</div><div class="ct-info-text"><h4 data-key="ct_email_label">Email</h4><a href="mailto:i.nassi9018@uca.ac.ma">i.nassi9018@uca.ac.ma</a></div></div>
+        <div class="ct-info-item reveal"><div class="ct-icon">&#128241;</div><div class="ct-info-text"><h4 data-key="ct_phone_label">Phone / WhatsApp</h4><a href="tel:+212606614127">+212 606 614 127</a></div></div>
+        <div class="ct-info-item reveal"><div class="ct-icon">&#127963;</div><div class="ct-info-text"><h4 data-key="ct_uni_label">University</h4><p>Université Cadi Ayyad, Marrakech</p></div></div>
+        <div class="ct-info-item reveal"><div class="ct-icon">&#128205;</div><div class="ct-info-text"><h4>Location</h4><p>Marrakech, Morocco &#127474;&#127462;</p></div></div>
+        <div class="socials reveal">
+          <a class="soc-btn" href="mailto:i.nassi9018@uca.ac.ma">&#128231; Email</a>
+          <a class="soc-btn" href="https://wa.me/212606614127" target="_blank">&#128172; WhatsApp</a>
+          <a class="soc-btn" href="#" target="_blank">&#128188; LinkedIn</a>
+          <a class="soc-btn" href="#" target="_blank">&#128025; GitHub</a>
+        </div>
+        <div class="reveal" style="margin-top:28px;padding:16px 20px;background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.18);border-radius:var(--r);display:flex;align-items:center;gap:12px">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--green);animation:pulse 1.7s infinite;flex-shrink:0"></div>
+          <p style="color:var(--green);font-size:.88rem" data-key="ct_available">Currently available for internships and collaborations</p>
+        </div>
+      </div>
+      <div class="reveal">
+        <form class="ct-form" onsubmit="submitForm(event)" id="contactForm">
+          <div class="form-row">
+            <div class="form-field"><label data-key="form_name_label">Your Name</label><input type="text" id="f-name" placeholder="Nassi..." required/></div>
+            <div class="form-field"><label data-key="form_email_label">Email</label><input type="email" id="f-email" placeholder="you@email.com" required/></div>
+          </div>
+          <div class="form-field">
+            <label data-key="form_subject_label">Subject</label>
+            <select id="f-subject">
+              <option value="" data-key="form_subj_sel">Select subject...</option>
+              <option value="collaboration" data-key="form_subj_collab">Energy Collaboration</option>
+              <option value="internship" data-key="form_subj_intern">Internship Offer</option>
+              <option value="web" data-key="form_subj_web">Web Project</option>
+              <option value="academic" data-key="form_subj_acad">Academic Inquiry</option>
+              <option value="other" data-key="form_subj_other">Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label data-key="form_msg_label">Message</label>
+            <textarea id="f-msg" placeholder="Tell me about your project..." oninput="updateCounter()" required></textarea>
+            <div class="form-counter"><span id="msgCounter">0</span>/500</div>
+          </div>
+          <div id="formErr" class="form-err"></div>
+          <button type="submit" class="btn-primary" data-key="form_send">Send Message &#9993;</button>
+          <div class="form-success" id="formSuccess" data-key="form_ok">&#9989; Message sent! I'll reply soon.</div>
+        </form>
+      </div>
+    </div>
+    <div class="footer" style="margin-top:60px"><p data-key="footer">© 2025 — Designed with Energy &amp; Code by Nassi · UCA Marrakech</p></div>
+  </div>
+</section>
+
+<!-- DATABASE / MY SPACE -->
+<section class="page" id="database">
+  <div class="section-shell">
+    <div style="max-width:1100px;margin:0 auto">
+      <div class="section-label reveal"><span data-key="db_label">My Space</span></div>
+      <h2 class="section-title reveal" data-key="db_title">Personal Database</h2>
+      <p class="about-text reveal" data-key="db_sub">Your saved modules, messages, activity history and analytics — stored locally in your browser.</p>
+      <div class="db-banner reveal">
+        <div class="db-banner-text">
+          <h3 data-key="db_banner_title">&#128452; Local Database Active</h3>
+          <p data-key="db_banner_desc">All data is stored using IndexedDB and localStorage. No server, no tracking — fully private.</p>
+        </div>
+        <div class="db-status"><div class="db-status-dot"></div><span data-key="db_online">Connected</span></div>
+      </div>
+      <div class="db-stats-row reveal">
+        <div class="db-stat"><div class="db-stat-num" id="dbStatFavs">0</div><div class="db-stat-label" data-key="db_stat1">Favorites</div></div>
+        <div class="db-stat"><div class="db-stat-num" id="dbStatMsgs">0</div><div class="db-stat-label" data-key="db_stat2">Messages Sent</div></div>
+        <div class="db-stat"><div class="db-stat-num" id="dbStatViews">0</div><div class="db-stat-label" data-key="db_stat3">Module Views</div></div>
+        <div class="db-stat"><div class="db-stat-num" id="dbStatVisits">0</div><div class="db-stat-label" data-key="db_stat4">Page Visits</div></div>
+      </div>
+      <div class="tab-bar reveal">
+        <button class="db-tab active" onclick="switchDbTab('favs',this)" data-key="dbt_favs">&#11088; Favorites</button>
+        <button class="db-tab" onclick="switchDbTab('msgs',this)" data-key="dbt_msgs">&#9993; Messages</button>
+        <button class="db-tab" onclick="switchDbTab('history',this)" data-key="dbt_hist">&#128203; History</button>
+        <button class="db-tab" onclick="switchDbTab('analytics',this)" data-key="dbt_analytics">&#128202; Analytics</button>
+      </div>
+      <div class="db-pane active" id="pane-favs">
+        <div class="fav-grid" id="favGrid"><div class="db-empty"><span>&#11088;</span><p data-key="db_favs_empty">No favorites yet — star a module to save it here!</p></div></div>
+      </div>
+      <div class="db-pane" id="pane-msgs">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <p style="color:var(--muted);font-size:.88rem" data-key="db_msgs_label">Messages you sent via the contact form</p>
+          <button class="btn-outline" style="padding:7px 16px;font-size:.78rem" onclick="clearMsgs()" data-key="db_clear">Clear All</button>
+        </div>
+        <div class="msgs-list" id="msgsList"><div class="db-empty"><span>&#9993;</span><p data-key="db_msgs_empty">No messages sent yet.</p></div></div>
+      </div>
+      <div class="db-pane" id="pane-history">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <p style="color:var(--muted);font-size:.88rem" data-key="db_hist_label">Your activity on this portfolio</p>
+          <button class="btn-outline" style="padding:7px 16px;font-size:.78rem" onclick="clearHistory()" data-key="db_clear_hist">Clear History</button>
+        </div>
+        <div class="history-list" id="historyList"><div class="db-empty"><span>&#128203;</span><p data-key="db_hist_empty">No activity recorded yet.</p></div></div>
+      </div>
+      <div class="db-pane" id="pane-analytics">
+        <div class="analytics-grid" id="analyticsGrid"></div>
+        <div style="max-width:540px;margin:0 auto;background:var(--glass);border:1px solid var(--border);border-radius:var(--rl);padding:28px;backdrop-filter:blur(14px)">
+          <h3 style="font-family:var(--font-d);font-size:.84rem;color:var(--solar);margin-bottom:20px;letter-spacing:2px" data-key="analytics_by_cat">Modules Viewed by Category</h3>
+          <div id="analyticsBar"></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer" style="margin-top:60px"><p data-key="footer">© 2025 — Designed with Energy &amp; Code by Nassi · UCA Marrakech</p></div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+// ═══════════════════════════════════════════
+// DATABASE MODULE — localStorage-based
+// ═══════════════════════════════════════════
+const DB = {
+  get(key, def = null) {
+    try { const v = localStorage.getItem('nassi_' + key); return v ? JSON.parse(v) : def; }
+    catch(e) { return def; }
+  },
+  set(key, val) {
+    try { localStorage.setItem('nassi_' + key, JSON.stringify(val)); } catch(e) {}
+  },
+  // Favorites
+  getFavs() { return this.get('favs', {}); },
+  addFav(id, data) {
+    const favs = this.getFavs();
+    favs[id] = { ...data, savedAt: new Date().toISOString() };
+    this.set('favs', favs);
+    this.logHistory('Saved module: ' + data.title);
+    this.inc('moduleViews', 0); // just ensure key exists
+  },
+  removeFav(id) {
+    const favs = this.getFavs();
+    if(favs[id]) { this.logHistory('Removed module: ' + favs[id].title); delete favs[id]; }
+    this.set('favs', favs);
+  },
+  isFav(id) { return !!this.getFavs()[id]; },
+  // Messages
+  getMsgs() { return this.get('msgs', []); },
+  addMsg(msg) {
+    const msgs = this.getMsgs();
+    msgs.unshift({ ...msg, id: Date.now(), time: new Date().toISOString() });
+    this.set('msgs', msgs.slice(0, 50)); // keep last 50
+    this.logHistory('Sent message to Nassi');
+  },
+  clearMsgs() { this.set('msgs', []); },
+  // Module views
+  logView(title, cat) {
+    const views = this.get('views', {});
+    views[cat] = (views[cat] || 0) + 1;
+    this.set('views', views);
+    const total = this.get('totalViews', 0);
+    this.set('totalViews', total + 1);
+    this.logHistory('Viewed module: ' + title);
+  },
+  getViews() { return this.get('views', {}); },
+  getTotalViews() { return this.get('totalViews', 0); },
+  // Page visits
+  logVisit(page) {
+    const v = this.get('visits', 0) + 1;
+    this.set('visits', v);
+    const pv = this.get('pageVisits', {});
+    pv[page] = (pv[page] || 0) + 1;
+    this.set('pageVisits', pv);
+  },
+  getVisits() { return this.get('visits', 0); },
+  getPageVisits() { return this.get('pageVisits', {}); },
+  // History
+  logHistory(action) {
+    const hist = this.get('history', []);
+    hist.unshift({ action, time: new Date().toISOString() });
+    this.set('history', hist.slice(0, 100));
+  },
+  getHistory() { return this.get('history', []); },
+  clearHistory() { this.set('history', []); },
+  // Summary stats
+  getStats() {
+    const favs = Object.keys(this.getFavs()).length;
+    const msgs = this.getMsgs().length;
+    const views = this.getTotalViews();
+    const visits = this.getVisits();
+    return { favs, msgs, views, visits };
+  }
+};
+
+// ═══ PARTICLE CANVAS ═══
+(function initCanvas(){
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  function spawn(){
+    particles = [];
+    const n = Math.min(Math.floor(window.innerWidth / 14), 90);
+    const colors = ['rgba(255,184,0,0.55)','rgba(0,230,118,0.45)','rgba(0,180,216,0.45)'];
+    for(let i=0;i<n;i++) particles.push({
+      x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+      r:Math.random()*2.2+0.8,
+      dx:(Math.random()-0.5)*0.4, dy:(Math.random()-0.5)*0.4,
+      color:colors[Math.floor(Math.random()*3)]
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach((p,i)=>{
+      p.x+=p.dx; p.y+=p.dy;
+      if(p.x<0||p.x>canvas.width) p.dx*=-1;
+      if(p.y<0||p.y>canvas.height) p.dy*=-1;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.color; ctx.globalAlpha=0.55; ctx.fill();
+      for(let j=i+1;j<particles.length;j++){
+        const q=particles[j], d=Math.hypot(p.x-q.x,p.y-q.y);
+        if(d<110){ ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+          ctx.strokeStyle='rgba(255,184,0,0.04)'; ctx.globalAlpha=0.04*(1-d/110); ctx.lineWidth=0.6; ctx.stroke(); }
+      }
+      ctx.globalAlpha=1;
+    });
+    requestAnimationFrame(draw);
+  }
+  resize(); spawn(); draw();
+  window.addEventListener('resize',()=>{ resize(); spawn(); });
+})();
+
+// ═══ CURSOR ═══
+(function initCursor(){
+  if(window.innerWidth<768) return;
+  const cur=document.getElementById('cur'), dot=document.getElementById('cur-dot');
+  let mx=0,my=0,cx=0,cy=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    dot.style.left=mx+'px'; dot.style.top=my+'px';
+    dot.style.opacity='1'; cur.style.opacity='1';
+  });
+  document.addEventListener('mousedown',()=>cur.classList.add('clk'));
+  document.addEventListener('mouseup',()=>cur.classList.remove('clk'));
+  document.querySelectorAll('a,button,[onclick],[style*="cursor:pointer"]').forEach(el=>{
+    el.addEventListener('mouseenter',()=>cur.classList.add('hov'));
+    el.addEventListener('mouseleave',()=>cur.classList.remove('hov'));
+  });
+  function moveCursor(){
+    cx+=(mx-cx)*0.11; cy+=(my-cy)*0.11;
+    cur.style.left=cx+'px'; cur.style.top=cy+'px';
+    requestAnimationFrame(moveCursor);
+  }
+  moveCursor();
+})();
+
+// ═══ NAV SCROLL ═══
+window.addEventListener('scroll',()=>{},true);
+document.querySelectorAll('.page').forEach(p=>{
+  p.addEventListener('scroll',()=>{
+    if(!p.classList.contains('active')) return;
+    const nav=document.getElementById('navbar');
+    p.scrollTop>30 ? nav.classList.add('slim') : nav.classList.remove('slim');
+    const pct=p.scrollTop/(p.scrollHeight-p.clientHeight)*100;
+    document.getElementById('progress-bar').style.width=pct+'%';
+    const btt=document.getElementById('btt');
+    p.scrollTop>300 ? btt.classList.add('vis') : btt.classList.remove('vis');
+  });
+});
+
+// ═══ PAGE NAVIGATION ═══
+let currentPage = 'home';
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  const next=document.getElementById(id);
+  next.classList.add('active');
+  next.scrollTop=0;
+  const link=document.querySelector(`.nav-links a[onclick*="'${id}'"]`);
+  if(link) link.classList.add('active');
+  document.getElementById('navLinks').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('progress-bar').style.width='0';
+  setTimeout(()=>animatePage(id),60);
+  if(id==='skills') setTimeout(animateSkills,400);
+  if(id==='database') setTimeout(refreshDB,200);
+  DB.logVisit(id);
+  const visits=DB.getVisits();
+  const el=document.getElementById('stat-visits');
+  if(el) el.textContent=visits;
+  currentPage=id;
+}
+
+function animatePage(id){
+  const page=document.getElementById(id);
+  if(id==='home'){
+    gsap.fromTo('#home .hero-animate',{y:40,opacity:0},{y:0,opacity:1,duration:.9,stagger:.12,ease:'power3.out'});
+    gsap.fromTo('#home .hero-card,#home .float-card',{x:40,opacity:0,scale:.96},{x:0,opacity:1,scale:1,duration:1.1,stagger:.15,ease:'power3.out'});
+    animateCounters();
+  }
+  if(['about','skills','contact','modules','database'].includes(id)){
+    gsap.fromTo(page.querySelectorAll('.reveal'),{y:32,opacity:0},{y:0,opacity:1,duration:.8,stagger:.06,ease:'power3.out'});
+  }
+  if(id==='modules') renderModules();
+}
+
+// ═══ COUNTERS ═══
+function animateCounters(){
+  animNum('stat-modules',0,22,1200);
+  animNum('stat-fields',0,8,1000);
+  const visits=DB.getVisits();
+  animNum('stat-visits',0,visits,800);
+}
+function animNum(id,start,end,dur){
+  const el=document.getElementById(id);
+  if(!el||end===0){if(el)el.textContent=end;return;}
+  const step=(end-start)/(dur/16); let cur=start;
+  const timer=setInterval(()=>{
+    cur+=step;
+    if(cur>=end){cur=end;clearInterval(timer);}
+    el.textContent=Math.floor(cur)+(id==='stat-modules'?'+':'');
+  },16);
+}
+
+// ═══ HAMBURGER ═══
+function toggleMenu(){
+  document.getElementById('navLinks').classList.toggle('open');
+  document.getElementById('hamburger').classList.toggle('open');
+}
+
+// ═══ BACK TO TOP ═══
+function backToTop(){
+  const p=document.querySelector('.page.active');
+  if(p) p.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══ TOAST ═══
+function showToast(msg, dur=3000){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+// ═══ SKILLS ANIMATION ═══
+function animateSkills(){
+  document.getElementById('skillsGrid').classList.add('skills-anim');
+  drawRadar();
+}
+
+// ═══ RADAR CHART ═══
+function drawRadar(){
+  const canvas=document.getElementById('radarChart');
+  if(!canvas||!canvas.getContext) return;
+  const ctx=canvas.getContext('2d');
+  const w=canvas.width, h=canvas.height;
+  const cx=w/2, cy=h/2, r=Math.min(w,h)/2-28;
+  const labels=['Solar','Physics','Math','Web','EM','Chem'];
+  const vals=[.92,.90,.88,.84,.87,.82];
+  const n=labels.length;
+  ctx.clearRect(0,0,w,h);
+  // Grid rings
+  for(let ring=1;ring<=4;ring++){
+    ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const a=i*Math.PI*2/n-Math.PI/2;
+      const pr=r*(ring/4);
+      const x=cx+Math.cos(a)*pr, y=cy+Math.sin(a)*pr;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle='rgba(255,184,0,0.12)'; ctx.lineWidth=1; ctx.stroke();
+  }
+  // Spokes
+  for(let i=0;i<n;i++){
+    const a=i*Math.PI*2/n-Math.PI/2;
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+    ctx.strokeStyle='rgba(255,184,0,0.15)'; ctx.lineWidth=1; ctx.stroke();
+  }
+  // Data polygon
+  ctx.beginPath();
+  for(let i=0;i<n;i++){
+    const a=i*Math.PI*2/n-Math.PI/2;
+    const x=cx+Math.cos(a)*r*vals[i], y=cy+Math.sin(a)*r*vals[i];
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+  ctx.fillStyle='rgba(255,184,0,0.14)'; ctx.fill();
+  ctx.strokeStyle='rgba(255,184,0,0.65)'; ctx.lineWidth=2; ctx.stroke();
+  // Dots & labels
+  for(let i=0;i<n;i++){
+    const a=i*Math.PI*2/n-Math.PI/2;
+    const x=cx+Math.cos(a)*r*vals[i], y=cy+Math.sin(a)*r*vals[i];
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle='#ffb800'; ctx.fill();
+    const lx=cx+Math.cos(a)*(r+18), ly=cy+Math.sin(a)*(r+18);
+    ctx.fillStyle='rgba(232,244,248,0.7)'; ctx.font='10px Orbitron,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(labels[i], lx, ly);
+  }
+}
+
+// ═══ FORM COUNTER ═══
+function updateCounter(){
+  const v=document.getElementById('f-msg').value.length;
+  document.getElementById('msgCounter').textContent=Math.min(v,500);
+}
+
+// ═══ CONTACT FORM ═══
+function submitForm(e){
+  e.preventDefault();
+  const name=document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const subject=document.getElementById('f-subject').value;
+  const msg=document.getElementById('f-msg').value.trim();
+  const errEl=document.getElementById('formErr');
+  const t=translations[currentLang]||translations.en;
+  errEl.style.display='none';
+  if(!name||!email||!msg){ errEl.textContent=t.form_fill||'Please fill all fields.'; errEl.style.display='block'; return; }
+  const emailRe=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailRe.test(email)){ errEl.textContent=t.form_email_err||'Please enter a valid email.'; errEl.style.display='block'; return; }
+  // Save to DB
+  DB.addMsg({ name, email, subject, body: msg });
+  document.getElementById('formSuccess').style.display='block';
+  document.getElementById('contactForm').reset();
+  document.getElementById('msgCounter').textContent='0';
+  setTimeout(()=>document.getElementById('formSuccess').style.display='none',5000);
+  updateFavBadge();
+  showToast('✅ Message saved in your database!');
+}
+
+// ═══ MODULE SYSTEM ═══
+
+const moduleData = {
+  mod1:{title:"Wave Optics",badge:"Physics",
+    image:"https://images.unsplash.com/photo-1453733190371-0a9bedd82893?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1564144006388-615f4780b303?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80"],
+    text:"Wave Optics studies light as a wave phenomenon. It explains interference, diffraction, coherence, and polarization.",topics:["Interference of light","Diffraction patterns","Young's double slit experiment","Coherence and polarization"],apps:["Optical instruments","Fiber optics","Laser systems","Scientific measurement"]},
+  mod2:{title:"Chemistry in Solution",badge:"Chemistry",
+    image:"https://images.unsplash.com/photo-1532187643603-ba119ca4109e?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1628863353691-0071c8c1874c?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1616400619175-5beda3a17896?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1554475901-4538ddfbccc2?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1587691592099-24045742c181?auto=format&fit=crop&w=600&q=80"],
+    text:"This module explains chemical reactions in liquid media, including acid-base equilibria, redox systems, ionic reactions, and electrochemistry.",topics:["Acid-base equilibria","Redox reactions","pH and solution chemistry","Electrochemical cells"],apps:["Battery chemistry","Corrosion control","Fuel cells","Chemical analysis"]},
+  mod3:{title:"Thermodynamics",badge:"Energy",
+    image:"https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1581093458791-9d42e3c7e117?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1562408590-e32931084e23?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1516912481808-3406841bd33c?auto=format&fit=crop&w=600&q=80"],
+    text:"Thermodynamics studies heat, work, energy transformations, and entropy. Essential for engines, thermal systems, and solar-thermal applications.",topics:["First and second laws","Entropy and enthalpy","Thermal cycles","Energy conversion"],apps:["Heat engines","Solar thermal systems","Cooling systems","Energy efficiency"]},
+  mod4:{title:"Quantum Mechanics",badge:"Quantum",
+    image:"https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1580584126903-c17d41830450?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1634912312985-c7a2e17d13b3?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&w=600&q=80"],
+    text:"Quantum Mechanics explores wave functions, energy levels, uncertainty, and quantum behavior. Fundamental for semiconductors and modern electronics.",topics:["Wave functions","Schrödinger equation","Quantum states","Tunneling and probability"],apps:["Semiconductors","Nanotechnology","Quantum devices","Modern electronics"]},
+  mod5:{title:"Photovoltaic Panels",badge:"Solar",
+    image:"https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1545208640-ffe8da8f9b14?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1497440001374-f26997328c1b?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=600&q=80"],
+    text:"Photovoltaic Panels focuses on solar cells, I-V curves, MPPT, sizing, and the design of complete PV systems for grid or off-grid use.",topics:["Solar cell physics","I-V characteristics","MPPT systems","PV installation sizing"],apps:["Solar farms","Residential PV systems","Off-grid energy","Renewable energy design"]},
+  mod6:{title:"Energy Storage",badge:"Storage",
+    image:"https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1571458765-b82dc2359f78?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1620714223084-8fcacc2dbed5?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1581093458791-9d42e3c7e117?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80"],
+    text:"Energy Storage studies batteries, capacitors, and technologies to store electrical energy. Central to renewable energy systems and smart grids.",topics:["Battery technologies","Supercapacitors","Storage efficiency","Charging and discharging behavior"],apps:["Solar storage systems","Electric vehicles","Backup power","Smart grids"]},
+  mod7:{title:"Wind Energy",badge:"Wind",
+    image:"https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1548337138-e87d889cc369?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=600&q=80"],
+    text:"Wind Energy studies the conversion of wind into electricity through turbines, aerodynamic design, and performance analysis.",topics:["Turbine aerodynamics","Wind site analysis","Power curves","Generator systems"],apps:["Wind farms","Hybrid systems","Sustainable power generation","Site planning"]},
+  mod8:{title:"Applied Mathematics",badge:"Math",
+    image:"https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1635372722656-389f87a941b7?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1596495577886-d920f1fb7238?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1580894742597-87bc8789db3d?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&w=600&q=80"],
+    text:"Applied Mathematics provides equations, transforms, approximation methods, and numerical approaches used across physics and engineering.",topics:["Differential equations","Linear algebra","Transforms","Numerical methods"],apps:["Scientific modeling","Simulation","Data analysis","Engineering calculations"]},
+  mod15:{title:"Analysis",badge:"Analysis",
+    image:"https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1453733190371-0a9bedd82893?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1494059980473-813e73ee784b?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=600&q=80"],
+    text:"Analysis develops rigorous mathematical reasoning through limits, derivatives, integrals, and advanced function study. It is the base of scientific thinking.",topics:["Limits and continuity","Derivatives","Integrals","Series and convergence"],apps:["Scientific modeling","Optimization","Signal analysis","Theoretical physics"]},
+  mod16:{title:"Nuclear Physics",badge:"Nuclear",
+    image:"https://images.unsplash.com/photo-1518152006812-edab29b069ac?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1559757175-0eb30cd8c063?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1582719471384-894fbb16e074?auto=format&fit=crop&w=600&q=80"],
+    text:"Nuclear Physics studies the nucleus structure, radioactive decay, nuclear reactions, and energy from fission and fusion.",topics:["Radioactivity","Nuclear reactions","Fission and fusion","Radiation safety"],apps:["Nuclear energy","Medical imaging","Radiation measurement","Scientific research"]},
+  mod17:{title:"Physical Sensors",badge:"Sensors",
+    image:"https://images.unsplash.com/photo-1581092334651-ddf19d571e43?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1581093458791-9d42e3c7e117?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?auto=format&fit=crop&w=600&q=80"],
+    text:"Physical Sensors studies devices that measure temperature, pressure, humidity, and light. Sensors are at the center of intelligent energy systems.",topics:["Temperature sensors","Pressure sensors","Light sensors","Signal acquisition"],apps:["Smart systems","Energy monitoring","Industrial automation","Environmental sensing"]},
+  mod18:{title:"Solar Concentrators",badge:"Solar CSP",
+    image:"https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1626425134975-ce85db023d21?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1591696205602-2f950c417cb9?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=80"],
+    text:"Solar Concentrators focus sunlight to produce high thermal energy. Important for CSP plants and thermal storage systems.",topics:["Solar concentration","Parabolic mirrors","Thermal efficiency","CSP technologies"],apps:["Solar thermal plants","High-temperature energy systems","Industrial heating","Thermal storage"]},
+  mod19:{title:"Algorithms in Electricity",badge:"Algorithms",
+    image:"https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80"],
+    text:"Algorithms in Electricity applies algorithmic thinking — optimization, simulation, and smart processing — to solve engineering problems in circuits.",topics:["Algorithm design","Circuit simulation","Optimization methods","Numerical problem solving"],apps:["Electrical simulation","Smart energy management","Automation logic","Engineering software"]},
+  mod20:{title:"Electromagnetism",badge:"EM",
+    image:"https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1586348943529-beaae6c28db9?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1564865878688-9a244444042a?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=600&q=80"],
+    text:"Electromagnetism studies electric and magnetic fields, induction, and the laws governing electromagnetic interactions.",topics:["Electric fields","Magnetic fields","Maxwell equations","Electromagnetic induction"],apps:["Transformers","Motors and generators","Electronics","Communication systems"]},
+  mod21:{title:"Solid Mechanics",badge:"Solid",
+    image:"https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80"],
+    text:"Solid Mechanics studies forces, stress, strain, deformation, and equilibrium in structures and materials.",topics:["Stress and strain","Elasticity","Static equilibrium","Material behavior"],apps:["Structural design","Mechanical engineering","Material testing","Construction analysis"]},
+  mod22:{title:"Electrical Circuits",badge:"Circuits",
+    image:"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80",
+    gallery:["https://images.unsplash.com/photo-1601931935821-5fbe71157695?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1608496601160-f86d19a44f9e?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1580894742597-87bc8789db3d?auto=format&fit=crop&w=600&q=80","https://images.unsplash.com/photo-1555664424-778a1e5e1b48?auto=format&fit=crop&w=600&q=80"],
+    text:"Electrical Circuits introduces current, voltage, resistance, Kirchhoff laws, equivalent circuits, and analysis of electrical networks.",topics:["Ohm's law","Series and parallel circuits","Kirchhoff laws","Equivalent resistance and power"],apps:["Electronic design","Power systems basics","Circuit troubleshooting","Renewable energy connections"]}
+};
+
+// Render modules grid
+function renderModules(filter='all', search='') {
+  const grid = document.getElementById('modsGrid');
+  grid.innerHTML = '';
+  const favs = DB.getFavs();
+  let count = 0;
+  const keys = Object.keys(moduleData);
+  const filtered = keys.filter(k => {
+    const m = moduleData[k];
+    const catMatch = filter==='all' || m.badge===filter;
+    const s = search.toLowerCase();
+    const searchMatch = !s || m.title.toLowerCase().includes(s) || m.badge.toLowerCase().includes(s) || m.text.toLowerCase().includes(s);
+    return catMatch && searchMatch;
+  });
+  if(!filtered.length){
+    grid.innerHTML='<div class="mods-empty"><span>🔍</span><p>No modules found.</p></div>';
+    document.getElementById('modCount').textContent='0';
+    return;
+  }
+  filtered.forEach((k,i) => {
+    const m = moduleData[k];
+    const isFav = !!favs[k];
+    const icons = {Physics:'🔭',Chemistry:'⚗️',Energy:'⚡',Math:'📐',Solar:'☀️',Wind:'💨',Storage:'🔋',Quantum:'⚛️',Nuclear:'☢️',Sensors:'📡','Solar CSP':'🌞',Algorithms:'💻',EM:'🧲',Solid:'⚙️',Circuits:'🔌'};
+    const icon = icons[m.badge] || icons[m.title?.split(' ')[0]] || '📚';
+    const photos = (m.gallery||[]).slice(0,3);
+    const photoHtml = photos.map(u=>`<div class="mod-photo" style="background-image:url('${u}')"></div>`).join('');
+    const card = document.createElement('div');
+    card.className = `mod-card${isFav?' favorited':''}`;
+    card.dataset.id = k;
+    card.dataset.cat = m.badge;
+    card.innerHTML = `
+      <div class="mod-fav-badge">⭐</div>
+      <div class="mod-thumb" style="background-image:url('${m.image}')"></div>
+      ${photos.length ? `<div class="mod-photos">${photoHtml}</div>` : ''}
+      <div class="mod-body">
+        <div class="mod-icon">${icon}</div>
+        <h3>${m.title}</h3>
+        <p>${m.text.substring(0,100)}...</p>
+        <span class="mod-tag">${m.badge}</span>
+      </div>`;
+    card.onclick = () => openModule(k);
+    grid.appendChild(card);
+    count++;
+  });
+  document.getElementById('modCount').textContent = count;
+  // Animate cards in
+  gsap.fromTo('#modsGrid .mod-card', {y:30,opacity:0,scale:.96}, {y:0,opacity:1,scale:1,duration:.65,stagger:.04,ease:'power3.out'});
+}
+
+let currentFilter = 'all';
+let currentSearch = '';
+
+function filterModules(cat, btn) {
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  currentFilter = cat;
+  renderModules(currentFilter, currentSearch);
+}
+
+function searchModules() {
+  currentSearch = document.getElementById('modSearch').value;
+  renderModules(currentFilter, currentSearch);
+}
+
+// Module detail overlay
+function openModule(id) {
+  const m = moduleData[id];
+  if(!m) return;
+  const isFav = DB.isFav(id);
+  DB.logView(m.title, m.badge);
+  const gallery = (m.gallery||[]).map(u=>`<div class="mod-gallery-img" style="background-image:url('${u}')"></div>`).join('');
+  document.getElementById('modContent').innerHTML = `
+    <div class="mod-detail-hero" style="background-image:url('${m.image}')">
+      <div class="mod-detail-badge">${m.badge}</div>
+    </div>
+    ${gallery ? `<div class="mod-gallery">${gallery}</div>` : ''}
+    <div class="mod-detail-body">
+      <h2>${m.title}</h2>
+      <p class="mod-detail-desc">${m.text}</p>
+      <div class="mod-detail-grid">
+        <div class="detail-box">
+          <h4>Key Topics</h4>
+          <ul>${(m.topics||[]).map(t=>`<li>${t}</li>`).join('')}</ul>
+        </div>
+        <div class="detail-box">
+          <h4>Applications</h4>
+          <ul>${(m.apps||[]).map(a=>`<li>${a}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <button class="fav-btn ${isFav?'active':''}" onclick="toggleFav('${id}')" id="favBtn-${id}">
+        ${isFav ? '⭐ Remove from Favorites' : '☆ Save to Favorites'}
+      </button>
+    </div>`;
+  document.getElementById('modOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  gsap.fromTo('.mod-panel',{y:28,scale:.94,opacity:0},{y:0,scale:1,opacity:1,duration:.38,ease:'power3.out'});
+}
+
+function closeModule() {
+  document.getElementById('modOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function handleOverlayClick(e) {
+  if(e.target===document.getElementById('modOverlay')) closeModule();
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModule(); });
+
+function toggleFav(id) {
+  const m = moduleData[id];
+  if(!m) return;
+  if(DB.isFav(id)){
+    DB.removeFav(id);
+    const btn=document.getElementById('favBtn-'+id);
+    if(btn){btn.classList.remove('active');btn.textContent='☆ Save to Favorites';}
+    showToast('Removed from favorites');
+  } else {
+    DB.addFav(id,{title:m.title,badge:m.badge,image:m.image,desc:m.text.substring(0,120)+'...'});
+    const btn=document.getElementById('favBtn-'+id);
+    if(btn){btn.classList.add('active');btn.textContent='⭐ Remove from Favorites';}
+    showToast('⭐ Saved to favorites!');
+  }
+  updateFavBadge();
+  // Update card favorited state
+  const card=document.querySelector(`.mod-card[data-id="${id}"]`);
+  if(card) card.classList.toggle('favorited', DB.isFav(id));
+}
+
+function updateFavBadge() {
+  const n = Object.keys(DB.getFavs()).length;
+  const badge = document.getElementById('favBadge');
+  if(badge) badge.textContent = '⭐ ' + n;
+}
+
+// ═══ DATABASE PAGE ═══
+function refreshDB() {
+  const stats = DB.getStats();
+  document.getElementById('dbStatFavs').textContent = stats.favs;
+  document.getElementById('dbStatMsgs').textContent = stats.msgs;
+  document.getElementById('dbStatViews').textContent = stats.views;
+  document.getElementById('dbStatVisits').textContent = stats.visits;
+  // update home stat
+  const sv = document.getElementById('stat-visits');
+  if(sv) sv.textContent = stats.visits;
+  renderFavs();
+  renderMsgs();
+  renderHistory();
+  renderAnalytics();
+  updateFavBadge();
+}
+
+function switchDbTab(tab, btn) {
+  document.querySelectorAll('.db-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.db-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pane-'+tab).classList.add('active');
+  if(tab==='analytics') setTimeout(renderAnalytics,100);
+}
+
+function renderFavs() {
+  const grid = document.getElementById('favGrid');
+  const favs = DB.getFavs();
+  const keys = Object.keys(favs);
+  if(!keys.length){
+    grid.innerHTML='<div class="db-empty"><span>⭐</span><p>No favorites yet — star a module to save it here!</p></div>';
+    return;
+  }
+  grid.innerHTML = keys.map(k=>{
+    const f=favs[k];
+    const time = new Date(f.savedAt).toLocaleDateString();
+    return `<div class="fav-item">
+      <div class="fav-item-thumb" style="background-image:url('${f.image}')"></div>
+      <div class="fav-item-body">
+        <h4>${f.title}</h4>
+        <p>${f.desc||''}</p>
+        <div class="fav-item-foot">
+          <span style="font-size:.72rem;color:var(--muted)">${f.badge} · ${time}</span>
+          <button class="fav-remove" onclick="removeFavItem('${k}')">Remove</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function removeFavItem(id){
+  DB.removeFav(id);
+  updateFavBadge();
+  refreshDB();
+  // Update mod card if visible
+  const card=document.querySelector(`.mod-card[data-id="${id}"]`);
+  if(card) card.classList.remove('favorited');
+  showToast('Removed from favorites');
+}
+
+function renderMsgs() {
+  const list = document.getElementById('msgsList');
+  const msgs = DB.getMsgs();
+  if(!msgs.length){
+    list.innerHTML='<div class="db-empty"><span>✉</span><p>No messages sent yet.</p></div>';
+    return;
+  }
+  list.innerHTML = msgs.map(m=>{
+    const time = new Date(m.time).toLocaleString();
+    return `<div class="msg-item">
+      <div class="msg-item-header">
+        <div>
+          <div class="msg-sender">${m.name}</div>
+          <div class="msg-subject">${m.subject||'(no subject)'}</div>
+        </div>
+        <div class="msg-time">${time}</div>
+      </div>
+      <div class="msg-body">${m.body}</div>
+      <button class="msg-del" onclick="delMsg(${m.id})">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+function delMsg(id){
+  const msgs = DB.getMsgs().filter(m=>m.id!==id);
+  DB.set('msgs', msgs);
+  refreshDB();
+  showToast('Message deleted');
+}
+
+function clearMsgs(){
+  DB.clearMsgs();
+  refreshDB();
+  showToast('Messages cleared');
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const hist = DB.getHistory();
+  if(!hist.length){
+    list.innerHTML='<div class="db-empty"><span>📋</span><p>No activity recorded yet.</p></div>';
+    return;
+  }
+  list.innerHTML = hist.slice(0,50).map(h=>{
+    const time = new Date(h.time).toLocaleString();
+    return `<div class="hist-item">
+      <div class="hist-dot"></div>
+      <div class="hist-text">${h.action}</div>
+      <div class="hist-time">${time}</div>
+    </div>`;
+  }).join('');
+}
+
+function clearHistory(){
+  DB.clearHistory();
+  renderHistory();
+  showToast('History cleared');
+}
+
+function renderAnalytics() {
+  const grid = document.getElementById('analyticsGrid');
+  const stats = DB.getStats();
+  const pv = DB.getPageVisits();
+  const cards = [
+    {title:'TOTAL VISITS', num: stats.visits, trend: '+Active'},
+    {title:'MODULE VIEWS', num: stats.views, trend: '📊 Tracked'},
+    {title:'FAVORITES', num: stats.favs, trend: '⭐ Saved'},
+    {title:'MESSAGES', num: stats.msgs, trend: '✉ Sent'},
+  ];
+  grid.innerHTML = cards.map(c=>`
+    <div class="analytic-card">
+      <h4>${c.title}</h4>
+      <div class="analytic-num">${c.num}</div>
+      <div class="analytic-trend">${c.trend}</div>
+    </div>`).join('');
+  
+  // Bar chart by category
+  const views = DB.getViews();
+  const cats = ['Energy','Physics','Math','Chemistry','Solar','Wind'];
+  const barEl = document.getElementById('analyticsBar');
+  const max = Math.max(...cats.map(c=>views[c]||0), 1);
+  barEl.innerHTML = cats.map(c=>{
+    const v = views[c]||0;
+    const pct = Math.round((v/max)*100);
+    return `<div class="bar-chart-row">
+      <div class="bar-chart-label">${c}</div>
+      <div class="bar-chart-bg"><div class="bar-chart-fill" style="width:${pct}%"></div></div>
+      <div class="bar-chart-val">${v}</div>
+    </div>`;
+  }).join('');
+  // Animate bars
+  setTimeout(()=>{
+    document.querySelectorAll('.bar-chart-fill').forEach(b=>{
+      const w = b.style.width; b.style.width='0';
+      setTimeout(()=>b.style.width=w, 50);
+    });
+  },50);
+}
+
+// ═══ SET LANGUAGE ═══
+let currentLang = 'en';
+const translations = {
+  en:{
+    nav_home:"Home",nav_about:"About",nav_modules:"Modules",nav_skills:"Skills",nav_contact:"Contact",nav_db:"My Space",
+    tag_status:"Available for collaboration",
+    hero_line1:"Engineering the",hero_line2:"Energy Future",
+    hero_sub:"Student of Renewable Energies at UCA, passionate about solar power and building modern digital interfaces for a cleaner future.",
+    btn_explore:"Explore My Work",btn_contact:"Get In Touch",
+    tag1:"Renewable Energy",tag2:"Photovoltaics",tag3:"Analysis",tag4:"Electromagnetism",tag5:"Nuclear",
+    card_badge:"Scientific Focus",card_title:"Renewable Energy Systems",
+    card_desc:"Photovoltaic systems, smart grids, energy storage, physical sensors, solar concentration, and scientific computation.",
+    card_s1:"Solar",card_s2:"Analysis",card_s3:"Physics",card_s4:"Web UI",
+    fc1:"Solar Flux",fc2:"Smart Analysis",fc3:"Scientific Logic",
+    stat1:"Core Modules",stat2:"Advanced Fields",stat3:"Curiosity Level",scroll:"Scroll",
+    about_label:"About Me",about_title:"Bridging Science & Technology",
+    about_p1:"I am a student at Cadi Ayyad University studying renewable energies. My path combines physics, chemistry, and digital technologies.",
+    about_p2:"Beyond my academic studies, I am passionate about web development and modern interface design.",
+    about_p3:"My goal is to connect energy engineering with technology and create useful solutions for a sustainable future.",
+    btn_modules:"View My Modules",
+    tl1_title:"Baccalauréat — Sciences Physiques",tl1_desc:"Graduated with honors, foundation in physics and mathematics.",
+    tl2_title:"DEUST — Sciences & Technologies",tl2_desc:"University Cadi Ayyad — Multidisciplinary scientific training.",
+    tl3_title:"Licence — Renewable Energies",tl3_desc:"UCA — Specialization in solar, wind, and energy systems.",
+    ec1_title:"Energy Systems",ec1_desc:"Photovoltaics, wind turbines, thermal collectors, smart grids. Designing systems for maximum renewable yield and efficiency.",
+    ec2_title:"Scientific Research",ec2_desc:"Quantum mechanics, electromagnetism, thermodynamics. Applying foundational science to real engineering problems.",
+    ec3_title:"Digital Engineering",ec3_desc:"Web technologies and computational tools to analyze and simulate energy systems with interactive dashboards.",
+    ec4_title:"Sustainable Future",ec4_desc:"Committed to clean energy for Morocco and beyond — combining local expertise with global scientific standards.",
+    about_quote:"\"The energy of the sun is infinite — our job is to harvest it wisely.\"",
+    mod_label:"Academic Modules",mod_title:"Courses I Study",mod_sub:"A strong academic path covering energy, chemistry, mathematics, quantum mechanics, and engineering tools.",
+    filter_all:"All",filter_physics:"Physics",filter_chem:"Chemistry",filter_energy:"Energy",filter_math:"Math",
+    mod_count_label:"modules",
+    sk_label:"My Skills",sk_title:"Science & Code Together",sk_sub:"A fusion of engineering sciences and modern web technologies.",
+    sk_energy:"Energy Sciences",sk_pv:"Photovoltaic Systems",sk_thermo:"Thermodynamics",sk_quant:"Quantum Mechanics",sk_chem:"Chemistry",sk_optics:"Optics & Waves",sk_em:"Electromagnetism",
+    sk_web:"Web Technologies",sk_responsive:"Responsive Design",sk_tools:"Tools & Languages",
+    lang_arabic:"Arabic",lang_native:"Native",lang_french:"French",lang_fluent:"Fluent",lang_english:"English",lang_advanced:"Advanced",
+    radar_title:"Scientific Profile",
+    ct_label:"Contact",ct_title:"Let's Build Something Together",ct_sub:"Interested in renewable energy collaboration, web projects, or just want to say hi — my inbox is open.",
+    ct_email_label:"Email",ct_phone_label:"Phone / WhatsApp",ct_uni_label:"University",ct_available:"Currently available for internships and collaborations",
+    form_name_label:"Your Name",form_email_label:"Email",form_subject_label:"Subject",form_msg_label:"Message",form_send:"Send Message",
+    form_subj_sel:"Select subject...",form_subj_collab:"Energy Collaboration",form_subj_intern:"Internship Offer",form_subj_web:"Web Project",form_subj_acad:"Academic Inquiry",form_subj_other:"Other",
+    form_ok:"✅ Message sent! I'll reply soon.",form_email_err:"Please enter a valid email.",form_fill:"Please fill all fields.",
+    db_label:"My Space",db_title:"Personal Database",db_sub:"Your saved modules, messages, activity history and analytics — stored locally in your browser.",
+    db_banner_title:"🔒 Local Database Active",db_banner_desc:"All data is stored using localStorage. No server, no tracking — fully private.",db_online:"Connected",
+    db_stat1:"Favorites",db_stat2:"Messages Sent",db_stat3:"Module Views",db_stat4:"Page Visits",
+    dbt_favs:"Favorites",dbt_msgs:"Messages",dbt_hist:"History",dbt_analytics:"Analytics",
+    db_favs_empty:"No favorites yet — star a module to save it here!",db_msgs_label:"Messages you sent via the contact form",db_clear:"Clear All",db_msgs_empty:"No messages sent yet.",
+    db_hist_label:"Your activity on this portfolio",db_clear_hist:"Clear History",db_hist_empty:"No activity recorded yet.",
+    analytics_by_cat:"Modules Viewed by Category",
+    footer:"© 2025 — Designed with Energy & Code by Nassi · UCA Marrakech"
+  },
+  fr:{
+    nav_home:"Accueil",nav_about:"À propos",nav_modules:"Modules",nav_skills:"Compétences",nav_contact:"Contact",nav_db:"Mon espace",
+    tag_status:"Disponible pour collaborer",
+    hero_line1:"Construire le",hero_line2:"Futur de l'énergie",
+    hero_sub:"Étudiant en énergies renouvelables à l'UCA, passionné par l'énergie solaire et la création d'interfaces numériques modernes pour un avenir plus propre.",
+    btn_explore:"Découvrir mon travail",btn_contact:"Me contacter",
+    tag1:"Énergies renouvelables",tag2:"Photovoltaïque",tag3:"Analyse",tag4:"Électromagnétisme",tag5:"Nucléaire",
+    card_badge:"Focus Scientifique",card_title:"Systèmes d'énergie renouvelable",
+    card_desc:"Systèmes photovoltaïques, réseaux intelligents, stockage, capteurs, concentration solaire et calcul scientifique.",
+    card_s1:"Solaire",card_s2:"Analyse",card_s3:"Physique",card_s4:"Web UI",
+    fc1:"Flux Solaire",fc2:"Analyse Intelligente",fc3:"Logique Scientifique",
+    stat1:"Modules clés",stat2:"Domaines avancés",stat3:"Niveau de curiosité",scroll:"Défiler",
+    about_label:"À propos",about_title:"Relier la science et la technologie",
+    about_p1:"Je suis étudiant à l'Université Cadi Ayyad en énergies renouvelables. Mon parcours réunit physique, chimie et technologies numériques.",
+    about_p2:"Au-delà de mes études, je suis passionné par le développement web et le design d'interfaces modernes.",
+    about_p3:"Mon objectif est de relier l'ingénierie énergétique à la technologie pour créer des solutions utiles pour un avenir durable.",
+    btn_modules:"Voir mes modules",
+    tl1_title:"Baccalauréat — Sciences Physiques",tl1_desc:"Diplômé avec mention, bases en physique et mathématiques.",
+    tl2_title:"DEUST — Sciences & Technologies",tl2_desc:"Université Cadi Ayyad — Formation scientifique pluridisciplinaire.",
+    tl3_title:"Licence — Énergies Renouvelables",tl3_desc:"UCA — Spécialisation solaire, éolien et systèmes énergétiques.",
+    ec1_title:"Systèmes énergétiques",ec1_desc:"Photovoltaïque, éolien, capteurs thermiques, réseaux intelligents. Conception pour un rendement maximal.",
+    ec2_title:"Recherche scientifique",ec2_desc:"Mécanique quantique, électromagnétisme, thermodynamique. Appliquer la science fondamentale aux problèmes d'ingénierie.",
+    ec3_title:"Ingénierie numérique",ec3_desc:"Outils web et computationnels pour analyser et simuler les systèmes énergétiques.",
+    ec4_title:"Avenir durable",ec4_desc:"Engagé pour une énergie propre au Maroc et au-delà — alliant expertise locale et standards scientifiques.",
+    about_quote:"« L'énergie du soleil est infinie — notre travail est de la récolter avec sagesse. »",
+    mod_label:"Modules académiques",mod_title:"Cours étudiés",mod_sub:"Un parcours solide couvrant l'énergie, la chimie, les mathématiques, la mécanique quantique et les outils d'ingénierie.",
+    filter_all:"Tout",filter_physics:"Physique",filter_chem:"Chimie",filter_energy:"Énergie",filter_math:"Maths",
+    mod_count_label:"modules",
+    sk_label:"Mes compétences",sk_title:"Science et code réunis",sk_sub:"Une fusion des sciences de l'ingénieur et des technologies web modernes.",
+    sk_energy:"Sciences de l'énergie",sk_pv:"Systèmes photovoltaïques",sk_thermo:"Thermodynamique",sk_quant:"Mécanique quantique",sk_chem:"Chimie",sk_optics:"Optique",sk_em:"Électromagnétisme",
+    sk_web:"Technologies web",sk_responsive:"Design responsive",sk_tools:"Outils et langages",
+    lang_arabic:"Arabe",lang_native:"Langue maternelle",lang_french:"Français",lang_fluent:"Courant",lang_english:"Anglais",lang_advanced:"Avancé",
+    radar_title:"Profil scientifique",
+    ct_label:"Contact",ct_title:"Construisons quelque chose ensemble",ct_sub:"Que vous soyez intéressé par les énergies renouvelables, une collaboration web ou simplement pour dire bonjour, ma boîte mail est ouverte.",
+    ct_email_label:"Email",ct_phone_label:"Téléphone / WhatsApp",ct_uni_label:"Université",ct_available:"Actuellement disponible pour des stages et collaborations",
+    form_name_label:"Votre nom",form_email_label:"Email",form_subject_label:"Sujet",form_msg_label:"Message",form_send:"Envoyer",
+    form_subj_sel:"Choisissez un sujet...",form_subj_collab:"Collaboration énergétique",form_subj_intern:"Offre de stage",form_subj_web:"Projet web",form_subj_acad:"Question académique",form_subj_other:"Autre",
+    form_ok:"✅ Message envoyé avec succès.",form_email_err:"Veuillez saisir un email valide.",form_fill:"Veuillez remplir tous les champs.",
+    db_label:"Mon espace",db_title:"Base de données personnelle",db_sub:"Vos modules sauvegardés, messages, historique et analyses — stockés localement.",
+    db_banner_title:"🔒 Base locale active",db_banner_desc:"Toutes les données sont stockées avec localStorage. Pas de serveur, pas de suivi — totalement privé.",db_online:"Connecté",
+    db_stat1:"Favoris",db_stat2:"Messages envoyés",db_stat3:"Vues modules",db_stat4:"Visites pages",
+    dbt_favs:"Favoris",dbt_msgs:"Messages",dbt_hist:"Historique",dbt_analytics:"Analyses",
+    db_favs_empty:"Aucun favori pour l'instant — étoilez un module pour le sauvegarder ici !",db_msgs_label:"Messages envoyés via le formulaire",db_clear:"Tout effacer",db_msgs_empty:"Aucun message envoyé.",
+    db_hist_label:"Votre activité sur ce portfolio",db_clear_hist:"Effacer l'historique",db_hist_empty:"Aucune activité enregistrée.",
+    analytics_by_cat:"Modules vus par catégorie",
+    footer:"© 2025 — Créé avec énergie et code par Nassi · UCA Marrakech"
+  },
+  ar:{
+    nav_home:"الرئيسية",nav_about:"من أنا",nav_modules:"المواد",nav_skills:"المهارات",nav_contact:"التواصل",nav_db:"مساحتي",
+    tag_status:"متاح للتعاون",
+    hero_line1:"هندسة",hero_line2:"مستقبل الطاقة",
+    hero_sub:"طالب في الطاقات المتجددة بجامعة القاضي عياض، شغوف بالطاقة الشمسية وبإنشاء واجهات رقمية حديثة من أجل مستقبل أنظف.",
+    btn_explore:"اكتشف أعمالي",btn_contact:"تواصل معي",
+    tag1:"الطاقة المتجددة",tag2:"الكهروضوئية",tag3:"التحليل",tag4:"الكهرومغناطيسية",tag5:"النووي",
+    card_badge:"التركيز العلمي",card_title:"أنظمة الطاقة المتجددة",
+    card_desc:"الأنظمة الكهروضوئية، الشبكات الذكية، تخزين الطاقة، الحساسات، التركيز الشمسي والحوسبة العلمية.",
+    card_s1:"الشمسية",card_s2:"التحليل",card_s3:"الفيزياء",card_s4:"واجهة الويب",
+    fc1:"التدفق الشمسي",fc2:"تحليل ذكي",fc3:"منطق علمي",
+    stat1:"مواد أساسية",stat2:"مجالات متقدمة",stat3:"مستوى الفضول",scroll:"مرر",
+    about_label:"من أنا",about_title:"ربط العلم بالتكنولوجيا",
+    about_p1:"أنا طالب في جامعة القاضي عياض أدرس الطاقات المتجددة. مساري يجمع الفيزياء والكيمياء والتقنيات الرقمية.",
+    about_p2:"إضافة إلى دراستي الأكاديمية، أنا شغوف بتطوير الويب وتصميم الواجهات الحديثة.",
+    about_p3:"هدفي هو الربط بين هندسة الطاقة والتكنولوجيا لصناعة حلول مفيدة لمستقبل مستدام.",
+    btn_modules:"عرض موادي",
+    tl1_title:"البكالوريا — علوم فيزيائية",tl1_desc:"تخرج بامتياز، أسس في الفيزياء والرياضيات.",
+    tl2_title:"DEUST — علوم وتقنيات",tl2_desc:"جامعة القاضي عياض — تكوين علمي متعدد التخصصات.",
+    tl3_title:"الإجازة — الطاقات المتجددة",tl3_desc:"UCA — تخصص في الطاقة الشمسية والريحية وأنظمة الطاقة.",
+    ec1_title:"أنظمة الطاقة",ec1_desc:"الأنظمة الكهروضوئية، توربينات الرياح، المجمعات الحرارية، الشبكات الذكية. تصميم لتحقيق أقصى عائد من الطاقة المتجددة.",
+    ec2_title:"البحث العلمي",ec2_desc:"ميكانيكا الكم، الكهرومغناطيسية، الديناميكا الحرارية. تطبيق العلوم الأساسية على المشكلات الهندسية.",
+    ec3_title:"الهندسة الرقمية",ec3_desc:"تقنيات الويب والأدوات الحسابية لتحليل ومحاكاة أنظمة الطاقة بلوحات تفاعلية.",
+    ec4_title:"مستقبل مستدام",ec4_desc:"ملتزم بالطاقة النظيفة للمغرب وخارجه — يجمع الخبرة المحلية مع المعايير العلمية العالمية.",
+    about_quote:"« طاقة الشمس لا نهائية — مهمتنا هي حصادها بحكمة. »",
+    mod_label:"المواد الأكاديمية",mod_title:"المقررات التي أدرسها",mod_sub:"مسار قوي يشمل الطاقة والكيمياء والرياضيات وميكانيكا الكم وأدوات الهندسة.",
+    filter_all:"الكل",filter_physics:"الفيزياء",filter_chem:"الكيمياء",filter_energy:"الطاقة",filter_math:"الرياضيات",
+    mod_count_label:"وحدة",
+    sk_label:"مهاراتي",sk_title:"العلم والكود معاً",sk_sub:"مزيج من علوم الهندسة والتقنيات الرقمية.",
+    sk_energy:"علوم الطاقة",sk_pv:"الأنظمة الكهروضوئية",sk_thermo:"الديناميكا الحرارية",sk_quant:"ميكانيكا الكم",sk_chem:"الكيمياء",sk_optics:"البصريات",sk_em:"الكهرومغناطيسية",
+    sk_web:"تقنيات الويب",sk_responsive:"التصميم المتجاوب",sk_tools:"الأدوات واللغات",
+    lang_arabic:"العربية",lang_native:"اللغة الأم",lang_french:"الفرنسية",lang_fluent:"بطلاقة",lang_english:"الإنجليزية",lang_advanced:"متقدم",
+    radar_title:"الملف العلمي",
+    ct_label:"التواصل",ct_title:"لنصنع شيئاً معاً",ct_sub:"إذا كنت مهتماً بالطاقة المتجددة أو التعاون في الويب أو فقط تريد قول مرحباً، فبريدي مفتوح.",
+    ct_email_label:"البريد الإلكتروني",ct_phone_label:"الهاتف / واتساب",ct_uni_label:"الجامعة",ct_available:"متاح حالياً للتدريب والتعاون",
+    form_name_label:"اسمك",form_email_label:"البريد الإلكتروني",form_subject_label:"الموضوع",form_msg_label:"الرسالة",form_send:"إرسال",
+    form_subj_sel:"اختر الموضوع...",form_subj_collab:"تعاون في الطاقة",form_subj_intern:"عرض تدريب",form_subj_web:"مشروع ويب",form_subj_acad:"استفسار أكاديمي",form_subj_other:"أخرى",
+    form_ok:"✅ تم إرسال الرسالة بنجاح.",form_email_err:"يرجى إدخال بريد إلكتروني صحيح.",form_fill:"يرجى ملء جميع الحقول.",
+    db_label:"مساحتي",db_title:"قاعدة البيانات الشخصية",db_sub:"وحداتك المحفوظة، رسائلك، سجل النشاط والتحليلات — مخزنة محلياً في متصفحك.",
+    db_banner_title:"🔒 قاعدة محلية نشطة",db_banner_desc:"جميع البيانات مخزنة باستخدام localStorage. لا خادم، لا تتبع — خصوصية تامة.",db_online:"متصل",
+    db_stat1:"المفضلة",db_stat2:"الرسائل المرسلة",db_stat3:"مشاهدات الوحدات",db_stat4:"زيارات الصفحات",
+    dbt_favs:"المفضلة",dbt_msgs:"الرسائل",dbt_hist:"السجل",dbt_analytics:"التحليلات",
+    db_favs_empty:"لا توجد مفضلات بعد — قم بتنجيم وحدة لحفظها هنا!",db_msgs_label:"الرسائل التي أرسلتها عبر نموذج الاتصال",db_clear:"مسح الكل",db_msgs_empty:"لم يتم إرسال رسائل بعد.",
+    db_hist_label:"نشاطك في هذا الملف",db_clear_hist:"مسح السجل",db_hist_empty:"لم يتم تسجيل أي نشاط بعد.",
+    analytics_by_cat:"الوحدات التي تمت مشاهدتها حسب التصنيف",
+    footer:"© 2025 — صُمم بالطاقة والكود بواسطة ناصي · جامعة القاضي عياض، مراكش"
+  }
+};
+
+function setLang(lang){
+  currentLang=lang;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`);
+  if(btn) btn.classList.add('active');
+  const t=translations[lang]||translations.en;
+  document.querySelectorAll('[data-key]').forEach(el=>{
+    const key=el.getAttribute('data-key');
+    if(t[key]!==undefined) el.innerHTML=t[key];
+  });
+  if(lang==='ar'){
+    document.documentElement.lang='ar';
+    document.documentElement.dir='rtl';
+    document.body.classList.add('ar');
+  } else {
+    document.documentElement.lang=lang;
+    document.documentElement.dir='ltr';
+    document.body.classList.remove('ar');
+  }
+  // Re-render modules grid with new translations (titles come from moduleData not translations)
+  if(currentPage==='modules') renderModules(currentFilter, currentSearch);
+}
+
+// ═══ INITIALIZATION ═══
+window.addEventListener('DOMContentLoaded', () => {
+  // Animate nav entrance
+  gsap.fromTo('nav',{y:-50,opacity:0},{y:0,opacity:1,duration:.9,ease:'power3.out'});
+  // Init home page
+  setTimeout(() => {
+    animatePage('home');
+    animateCounters();
+  }, 120);
+  // Mark favored cards on first render (modules page lazy-renders)
+  updateFavBadge();
+  // Update visit count on home stat
+  const visits = DB.getVisits();
+  const sv=document.getElementById('stat-visits');
+  if(sv) sv.textContent = visits;
+  // Render modules on first open
+  renderModules();
+});
+</script>
+</body>
+</html>
