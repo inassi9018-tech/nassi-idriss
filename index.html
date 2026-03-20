@@ -819,21 +819,16 @@ let sbClient = null, sbOnline = false;
 async function initSupabase() {
   try {
     sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    // Ping Supabase with a lightweight REST call — works even with RLS enabled
-    const res = await fetch(SUPABASE_URL + '/rest/v1/', {
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY
-      }
-    });
-    if (res.ok || res.status === 400 || res.status === 404) {
-      // Any HTTP response (even 4xx) means the server is reachable
-      sbOnline = true;
-      updateSbStatus(true);
-    } else {
-      throw new Error('HTTP ' + res.status);
-    }
+    // Test: try inserting nothing — just checks if server responds
+    const { data, error } = await sbClient
+      .from('messages')
+      .select('id')
+      .limit(1);
+    // If we get ANY response from server (even RLS error), we are connected
+    sbOnline = true;
+    updateSbStatus(true);
   } catch(e) {
+    // Only mark offline on true network failure
     sbOnline = false;
     updateSbStatus(false);
   }
@@ -984,7 +979,11 @@ async function submitForm(e) {
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){errEl.textContent=t.form_email_err||'Invalid email.';errEl.style.display='block';return;}
   btn.disabled=true;btn.textContent='⏳ Sending...';
   let cloud=false;
-  if(sbClient&&sbOnline){try{const{error}=await sbClient.from('messages').insert([{name,email,subject,body:msg}]);if(error)throw error;cloud=true;}catch(err){sbOnline=false;updateSbStatus(false);}}
+  if(sbClient){try{
+    const{error}=await sbClient.from('messages').insert([{name,email,subject,body:msg}]);
+    if(error){console.warn('Supabase insert error:',error.message);}
+    else{cloud=true;}
+  }catch(err){console.warn('Supabase exception:',err);}}
   DB.addMsg({name,email,subject,body:msg,source:cloud?'cloud':'local'});
   document.getElementById('formSuccess').style.display='block';
   document.getElementById('contactForm').reset();
